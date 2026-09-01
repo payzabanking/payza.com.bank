@@ -12178,12 +12178,12 @@ button {
 
 @media (max-width: 480px) {
 
-    #selectedCreditModal {
+    /* #selectedCreditModal {
 
         padding: 9px;
 
         align-items: flex-end;
-    }
+    } */
 
 
     .selected-credit-card {
@@ -13443,4 +13443,191 @@ button {
     #pwaInstallBtn {
         padding: 9px 11px;
     }
+}
+
+/* =========================================================
+   PAYZA — MOBILE SAFE MODAL / OVERLAY FIX
+   KEEP ALL FOUR EDGES VISIBLE
+========================================================= */
+
+.modal-overlay,
+#receiveCreditModal,
+#receiveAccountConfirmModal,
+#selectedCreditModal,
+.bank-transfer-modal,
+.crypto-wallet-modal,
+.save-again-confirm-overlay,
+.savings-confirm-overlay {
+
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100dvh !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding:
+        max(16px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)) !important;
+
+    box-sizing: border-box !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    overscroll-behavior: contain;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* KEEP HIDDEN OVERLAYS HIDDEN */
+
+.modal-overlay.hidden,
+#receiveCreditModal.hidden,
+#receiveAccountConfirmModal.hidden,
+#selectedCreditModal.hidden,
+.bank-transfer-modal.hidden,
+.crypto-wallet-modal.hidden,
+.save-again-confirm-overlay.hidden,
+.savings-confirm-overlay.hidden {
+
+    display: none !important;
+}
+
+
+/* =========================================================
+   ALL MAIN MODAL CARDS
+========================================================= */
+
+.modal-card,
+.receive-credit-card,
+.receive-account-confirm-card,
+.selected-credit-card,
+.bank-transfer-card,
+.crypto-wallet-card,
+.savings-withdraw-card,
+.save-again-confirm-card,
+.savings-confirm-card {
+
+    position: relative !important;
+
+    width: min(100%, 500px) !important;
+
+    /*
+       Card must always remain inside
+       the visible phone screen.
+    */
+    max-height:
+        calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)) - 24px) !important;
+
+    margin: auto !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    box-sizing: border-box !important;
+
+    -webkit-overflow-scrolling: touch;
+
+    overscroll-behavior: contain;
+}
+
+
+/* =========================================================
+   MOBILE PHONE FIX
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .modal-overlay,
+    #receiveCreditModal,
+    #receiveAccountConfirmModal,
+    #selectedCreditModal,
+    .bank-transfer-modal,
+    .crypto-wallet-modal,
+    .save-again-confirm-overlay,
+    .savings-confirm-overlay {
+
+        align-items: center !important;
+
+        justify-content: center !important;
+
+        padding:
+            max(12px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom)) 10px !important;
+    }
+
+
+    .modal-card,
+    .receive-credit-card,
+    .receive-account-confirm-card,
+    .selected-credit-card,
+    .bank-transfer-card,
+    .crypto-wallet-card,
+    .savings-withdraw-card,
+    .save-again-confirm-card,
+    .savings-confirm-card {
+
+        width: 100% !important;
+
+        max-width: 500px !important;
+
+        max-height:
+            calc(100dvh - max(12px, env(safe-area-inset-top)) - max(12px, env(safe-area-inset-bottom)) - 12px) !important;
+
+        margin: auto !important;
+
+        /*
+           All four corners remain visible.
+        */
+        border-radius: 22px !important;
+    }
+
+}
+
+
+/* =========================================================
+   SHORT PHONE SCREENS
+   Example: landscape phones / smaller iPhones
+========================================================= */
+
+@media (max-height: 700px) {
+
+    .modal-overlay,
+    #receiveCreditModal,
+    #receiveAccountConfirmModal,
+    #selectedCreditModal,
+    .bank-transfer-modal,
+    .crypto-wallet-modal,
+    .save-again-confirm-overlay,
+    .savings-confirm-overlay {
+
+        align-items: center !important;
+
+        padding-top:
+            max(8px, env(safe-area-inset-top)) !important;
+
+        padding-bottom:
+            max(8px, env(safe-area-inset-bottom)) !important;
+    }
+
+
+    .modal-card,
+    .receive-credit-card,
+    .receive-account-confirm-card,
+    .selected-credit-card,
+    .bank-transfer-card,
+    .crypto-wallet-card,
+    .savings-withdraw-card,
+    .save-again-confirm-card,
+    .savings-confirm-card {
+
+        max-height:
+            calc(100dvh - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom)) - 8px) !important;
+    }
+
 }
