@@ -1,0 +1,2425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,
+                   maximum-scale=1.0, user-scalable=no">
+
+    <title>Payza</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111111">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Payza">
+</head>
+
+<body>
+    <!-- =========================================================
+     AUTH SCREEN
+========================================================= -->
+
+    <div id="authScreen" class="auth-screen">
+
+        <div class="auth-glow glow-one"></div>
+        <div class="auth-glow glow-two"></div>
+
+        <div class="auth-content">
+
+            <!-- BRAND -->
+
+            <div class="brand-large">
+                <div class="brand-symbol">P</div>
+                <span>Payza</span>
+            </div>
+
+
+            <!-- =================================================
+             FIRST DEVICE / CREATE ACCOUNT
+        ================================================= -->
+
+            <div id="signupView">
+
+                <div class="auth-heading">
+
+                    <h1>
+                        Your Credit.<br>
+                        Made simpler.
+                    </h1>
+
+                    <p>
+                        Create your Payza account and manage
+                        your money from one beautiful place.
+                    </p>
+
+                </div>
+
+
+                <div class="auth-card">
+
+                    <div class="input-group">
+
+                        <label>Full Name</label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                👤
+                            </span>
+
+                            <input id="nameInput" type="text" placeholder="Enter your full name" autocomplete="name">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="input-group">
+
+                        <label>Password</label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                🔒
+                            </span>
+
+                            <input id="signupPasswordInput" type="password" placeholder="Create a password"
+                                autocomplete="new-password">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+
+                    <div class="input-group">
+
+                        <label>Confirm Password</label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                🔒
+                            </span>
+
+                            <input id="signupConfirmPasswordInput" type="password" placeholder="Confirm your password"
+                                autocomplete="new-password">
+
+                        </div>
+
+                    </div>
+
+
+                    <button id="createAccountBtn" class="primary-button" type="button">
+
+                        Create Account
+
+                        <span>→</span>
+
+                    </button>
+
+
+                    <div class="secure-note">
+
+                        <span>🔒</span>
+
+                        Your account is protected
+
+                    </div>
+
+
+                    <div class="auth-switch">
+
+                        <span>
+                            Already have an account?
+                        </span>
+
+                        <button id="showLoginBtn" type="button">
+                            Login!
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+             REGISTERED DEVICE LOGIN
+        ================================================= -->
+
+            <div id="loginView" class="hidden">
+
+                <div class="auth-heading">
+
+                    <h1>
+                        Welcome<br>
+                        back.
+                    </h1>
+
+                    <p>
+                        Login to continue to your
+                        Payza account.
+                    </p>
+
+                </div>
+
+
+                <div class="auth-card">
+
+
+                    <div class="input-group">
+
+                        <label>Password</label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                🔒
+                            </span>
+
+                            <input id="loginPasswordInput" type="password" placeholder="Enter your password"
+                                autocomplete="current-password">
+
+                        </div>
+
+                    </div>
+
+
+                    <button id="loginBtn" class="primary-button" type="button">
+
+                        Login
+
+                        <span>→</span>
+
+                    </button>
+
+
+                    <div class="auth-switch" style="margin-top:14px;">
+
+                        <button id="forgotPasswordBtn" type="button">
+                            Forgot Password?
+                        </button>
+
+                    </div>
+
+
+                    <div class="secure-note">
+
+                        <span>🔒</span>
+
+                        Your account is protected
+
+                    </div>
+
+
+                    <div class="auth-device-note" style="
+                        text-align:center;
+                        margin-top:14px;
+                        font-size:12px;
+                        opacity:.7;
+                    ">
+                        You already has a Payza account.
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+             FORGOT PASSWORD
+        ================================================= -->
+
+            <div id="forgotPasswordView" class="hidden">
+
+                <div class="auth-heading">
+
+                    <h1>
+                        Reset your<br>
+                        password.
+                    </h1>
+
+                    <p>
+                        Create a new password for the
+                        Payza account registered on this device.
+                    </p>
+
+                </div>
+
+
+                <div class="auth-card">
+
+
+                    <div class="input-group">
+
+                        <label>New Password</label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                🔒
+                            </span>
+
+                            <input id="newPasswordInput" type="password" placeholder="Enter new password"
+                                autocomplete="new-password">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label>Confirm Password</label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                🔒
+                            </span>
+
+                            <input id="confirmNewPasswordInput" type="password" placeholder="Confirm new password"
+                                autocomplete="new-password">
+
+                        </div>
+
+                    </div>
+
+
+                    <button id="resetPasswordBtn" class="primary-button" type="button">
+
+                        Change Password
+
+                        <span>→</span>
+
+                    </button>
+
+
+                    <div class="auth-switch">
+
+                        <button id="backToLoginBtn" type="button">
+                            ← Back to Login
+                        </button>
+
+                    </div>
+
+
+                    <div class="secure-note">
+
+                        <span>🔒</span>
+
+                        Your account is protected
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= 
+     MAIN APP 
+========================================================= -->
+
+    <div id="appScreen" class="app-screen hidden">
+
+        <!-- TOP BAR -->
+        <header class="top-bar">
+
+            <div class="welcome-area">
+
+                <div class="avatar" id="userAvatar">
+                    J
+                </div>
+
+                <div>
+                    <span class="welcome-small">Welcome back</span>
+                    <h2 id="welcomeName">Hi, Jane Smith</h2>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <main class="main-content">
+
+
+            <!-- ================================================= 
+             BALANCE CARD 
+        ================================================== -->
+
+            <section class="balance-card">
+
+                <div class="balance-top">
+
+                    <div>
+                        <span class="balance-label">
+                            Available Balance
+                        </span>
+
+                        <div class="balance-amount">
+                            <span id="balanceCurrencySymbol"></span>
+                            <strong id="balanceAmount">
+                                0.00
+                            </strong>
+                        </div>
+                    </div>
+
+                    <button class="eye-button" id="toggleBalance">
+                        ◉
+                    </button>
+
+                </div>
+
+
+                <div class="balance-divider"></div>
+
+
+                <div class="balance-bottom">
+
+                    <div>
+                        <span class="balance-caption">
+                            Account status
+                        </span>
+
+                        <div class="active-status">
+                            <span></span>
+                            Active
+                        </div>
+                    </div>
+
+                    <div class="account-mini">
+                        <span>Payza Account</span>
+                        <strong id="shortAccountNumber">
+                            •••• 3390
+                        </strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ================================================= 
+             QUICK ACTIONS 
+        ================================================== -->
+
+            <section class="section">
+
+                <div class="section-heading">
+                    <h3>Quick Actions</h3>
+                </div>
+
+
+                <div class="quick-actions">
+                
+                    <button class="quick-card" id="quickBuyCredit">
+                        <div class="quick-icon airtime-icon">
+                            <span>◉</span>
+                        </div>
+                
+                        <strong>Buy Credit</strong>
+                        <small>Credit</small>
+                    </button>
+                
+                
+                    <button class="quick-card" id="quickSendCredit">
+                        <div class="quick-icon data-icon">
+                            <span>⌁</span>
+                        </div>
+                
+                        <strong>Send Credit</strong>
+                        <small>Send</small>
+                    </button>
+                
+            <button class="quick-card" id="quickTopUp" type="button">
+                <div class="quick-icon electricity-icon">
+                    <span>↙</span>
+                </div>
+            
+                <strong>Receive Credit</strong>
+                <small>Receive Credit</small>
+            </button>
+                
+                    <button class="quick-card" id="quickSaveCredit">
+                        <div class="quick-icon bills-icon">
+                            <span>▣</span>
+                        </div>
+                
+                        <strong>Save Credit</strong>
+                        <small>Savings</small>
+                    </button>
+                
+                </div>
+
+            </section>
+
+    <div id="receiveCreditModal" class="modal-overlay hidden">
+    
+        <div class="receive-credit-card">
+    
+        <button type="button" class="receive-credit-close" id="closeReceiveCreditModal" aria-label="Close">
+            ×
+        </button>
+    
+    
+            <!-- HEADER -->
+    
+            <div class="receive-credit-card-header">
+    
+                <div class="receive-credit-icon">
+                    ↓
+                </div>
+    
+                <span class="modal-label">
+                    RECEIVE CREDIT
+                </span>
+    
+                <h2>
+                    Get Your Credit Account Number
+                </h2>
+    
+                <p>
+                    Get your unique Payza credit account number
+                    to receive credits directly from other users.
+                </p>
+    
+            </div>
+    
+    
+            <div class="receive-credit-content">
+    
+    
+                <!-- MAIN INFORMATION -->
+    
+                <div class="receive-credit-hero">
+    
+                    <div class="receive-credit-hero-icon">
+                        ȼ̲
+                    </div>
+    
+                    <div class="receive-credit-hero-text">
+    
+                        <strong>
+                            Your Credit Account Address
+                        </strong>
+    
+                        <span>
+                            Use your Payza account address to
+                            receive credit from other Payza users.
+                        </span>
+    
+                    </div>
+    
+                </div>
+    
+    
+                <!-- INSTRUCTIONS -->
+    
+                <div class="receive-credit-section-title">
+    
+                    <strong>
+                        How it works
+                    </strong>
+    
+                    <span>
+                        3 SIMPLE STEPS
+                    </span>
+    
+                </div>
+    
+    
+                <div class="receive-credit-steps">
+    
+                    <div class="receive-credit-step">
+    
+                        <div class="receive-credit-step-number">
+                            01
+                        </div>
+    
+                        <div class="receive-credit-step-content">
+    
+                            <strong>
+                                Get your account number
+                            </strong>
+    
+                            <span>
+                                Request your unique Payza credit
+                                account address.
+                            </span>
+    
+                        </div>
+    
+                    </div>
+    
+    
+                    <div class="receive-credit-step">
+    
+                        <div class="receive-credit-step-number">
+                            02
+                        </div>
+    
+                        <div class="receive-credit-step-content">
+    
+                            <strong>
+                                Share your address
+                            </strong>
+    
+                            <span>
+                                Give your PAYZA account address
+                                to the person sending you credit.
+                            </span>
+    
+                        </div>
+    
+                    </div>
+    
+    
+                    <div class="receive-credit-step">
+    
+                        <div class="receive-credit-step-number">
+                            03
+                        </div>
+    
+                        <div class="receive-credit-step-content">
+    
+                            <strong>
+                                Receive your credit
+                            </strong>
+    
+                            <span>
+                                Credit sent to your account address
+                                will be received into your Payza account.
+                            </span>
+    
+                        </div>
+    
+                    </div>
+    
+                </div>
+    
+    
+                <!-- ACCOUNT NUMBER -->
+    
+                <div id="receiveAccountNumberBox" class="receive-account-number-box hidden">
+    
+                    <span>
+                        Your Payza Credit Account Number
+                    </span>
+    
+                    <strong id="receiveAccountNumber">
+                        PAYZA-XXXXXXXXXX
+                    </strong>
+    
+                    <button type="button" id="copyReceiveAccountNumber">
+                        Copy
+                    </button>
+    
+                </div>
+    
+    
+                <!-- ACTION -->
+    
+                <div class="receive-credit-action">
+    
+                    <button type="button" id="getAccountNumberBtn" class="primary-button">
+    
+                        Get Account Number
+    
+                        <span>→</span>
+    
+                    </button>
+    
+                </div>
+    
+            </div>
+    
+        </div>
+    
+    </div>
+
+            <!-- =========================================================
+                 SEND CREDIT MODAL
+            ========================================================= -->
+            
+            <div id="sendCreditModal" class="modal-overlay hidden">
+            
+                <div class="modal-card">
+            
+                    <button class="modal-close" id="closeSendCreditModal">
+                        ×
+                    </button>
+            
+                    <div class="selected-icon">
+                        ⌁
+                    </div>
+            
+                    <span class="modal-label">
+                        SEND CREDIT
+                    </span>
+            
+                    <h2>Send Credit</h2>
+            
+                    <p class="modal-description">
+                        Send credit directly to another Payza account.
+                    </p>
+            
+                    <div class="send-available-box">
+            
+                        <span>Your Available Credit</span>
+            
+                        <strong>
+                            ȼ̲<span id="sendAvailableBalance">0.00</span>
+                        </strong>
+            
+                    </div>
+            
+            
+                    <div class="input-group">
+            
+                        <label>Beneficiary Account Address</label>
+            
+                        <div class="input-box">
+            
+                            <input id="beneficiaryAddressInput" type="text" placeholder="PAYZA-XXXXXXXXXX" autocomplete="off">
+            
+                        </div>
+            
+                    </div>
+            
+            
+                    <div class="input-group">
+            
+                        <label>Amount</label>
+            
+                        <div class="input-box">
+            
+                            <span class="input-icon">
+                                ȼ̲
+                            </span>
+            
+                            <input id="sendCreditAmountInput" type="number" min="1" inputmode="numeric" placeholder="Enter amount">
+            
+                        </div>
+            
+                    </div>
+            
+            
+                    <div id="beneficiaryPreview" class="beneficiary-preview hidden">
+            
+                        <span>Beneficiary</span>
+            
+                        <strong id="beneficiaryPreviewAddress">
+                            —
+                        </strong>
+            
+                    </div>
+            
+            
+                    <button id="confirmSendCreditBtn" class="primary-button" type="button">
+                        Confirm & Proceed
+                        <span>→</span>
+                    </button>
+            
+                </div>
+            
+            </div>
+
+            <!-- ========================================================= 
+                 SAVE CREDIT PLANS 
+            ========================================================= -->
+            
+            <div id="savingsPlansModal" class="modal-overlay hidden">
+            
+                <div class="modal-card savings-plans-card">
+            
+                    <button class="modal-close" id="closeSavingsPlansModal">
+                        ×
+                    </button>
+            
+                    <div class="modal-symbol">
+                        ȼ̲
+                    </div>
+            
+                    <span class="modal-label">
+                        SAVE CREDIT
+                    </span>
+            
+                    <h2>Grow your Credit</h2>
+            
+                    <p class="modal-description">
+                        Select a savings plan and earn daily interest.
+                    </p>
+            
+            
+                    <div class="savings-plans">
+            
+                        <button class="savings-plan" data-savings-amount="1000" data-savings-rate="1">
+                            <div>
+                                <strong>ȼ̲1,000</strong>
+                                <span>Credit Savings</span>
+                            </div>
+            
+                            <div>
+                                <strong>1%</strong>
+                                <span>Daily Interest</span>
+                            </div>
+            
+                            <span class="plan-arrow">→</span>
+                        </button>
+            
+            
+                        <button class="savings-plan" data-savings-amount="5000" data-savings-rate="1.2">
+                            <div>
+                                <strong>ȼ̲5,000</strong>
+                                <span>Credit Savings</span>
+                            </div>
+            
+                            <div>
+                                <strong>1.2%</strong>
+                                <span>Daily Interest</span>
+                            </div>
+            
+                            <span class="plan-arrow">→</span>
+                        </button>
+            
+            
+                        <button class="savings-plan" data-savings-amount="10000" data-savings-rate="1.5">
+                            <div>
+                                <strong>ȼ̲10,000</strong>
+                                <span>Credit Savings</span>
+                            </div>
+            
+                            <div>
+                                <strong>1.5%</strong>
+                                <span>Daily Interest</span>
+                            </div>
+            
+                            <span class="plan-arrow">→</span>
+                        </button>
+            
+            
+                        <button class="savings-plan" data-savings-amount="25000" data-savings-rate="2">
+                            <div>
+                                <strong>ȼ̲25,000</strong>
+                                <span>Credit Savings</span>
+                            </div>
+            
+                            <div>
+                                <strong>2%</strong>
+                                <span>Daily Interest</span>
+                            </div>
+            
+                            <span class="plan-arrow">→</span>
+                        </button>
+            
+            
+                        <button class="savings-plan" data-savings-amount="50000" data-savings-rate="2.5">
+                            <div>
+                                <strong>ȼ̲50,000</strong>
+                                <span>Credit Savings</span>
+                            </div>
+            
+                            <div>
+                                <strong>2.5%</strong>
+                                <span>Daily Interest</span>
+                            </div>
+            
+                            <span class="plan-arrow">→</span>
+                        </button>
+            
+                    </div>
+            
+            
+                    <!-- =========================================================
+                         CUSTOM CREDIT SAVINGS
+                    ========================================================= -->
+            
+                <div class="custom-savings-section">
+                
+                    <div class="custom-savings-label">
+                        Choose From above, or enter your prefered amount below.
+                    </div>
+                
+                    <div class="custom-savings-input-row">
+                
+                        <input type="number" id="customSavingsAmount" placeholder="Enter Credit amount" min="1" step="0.01">
+                
+                        <button type="button" id="submitCustomSavingsBtn">
+                            Submit
+                        </button>
+                
+                    </div>
+                
+                </div>
+            
+                </div>
+            
+            </div>
+
+            <!-- =========================================================
+                 SAVE CREDIT PAYMENT
+            ========================================================= -->
+            
+            <div id="savingsPaymentModal" class="modal-overlay hidden">
+            
+                <div class="modal-card">
+            
+                    <button class="modal-close" id="closeSavingsPaymentModal">
+                        ×
+                    </button>
+            
+                    <div class="selected-icon">
+                        ✓
+                    </div>
+            
+                    <span class="modal-label">
+                        SAVE CREDIT
+                    </span>
+            
+                    <h2>Confirm Savings</h2>
+            
+                    <div class="summary-box">
+            
+                        <div class="summary-row">
+                            <span>Amount</span>
+                            <strong id="savingsPaymentAmount">
+                                ȼ̲0.00
+                            </strong>
+                        </div>
+            
+                        <div class="summary-row">
+                            <span>Daily Interest</span>
+                            <strong id="savingsPaymentRate">
+                                0%
+                            </strong>
+                        </div>
+            
+                        <div class="summary-row">
+                            <span>Daily Earnings</span>
+                            <strong id="savingsDailyEarning">
+                                ȼ̲0.00
+                            </strong>
+                        </div>
+            
+                    </div>
+            
+            
+    <div class="payment-details savings-account-status">
+    
+        <h4>Your Account Status:</h4>
+    
+        <div id="savingsAccountStatusResult" class="savings-account-status-result">
+    
+            <div id="savingsStatusBalance" class="savings-status-line"></div>
+    
+            <div id="savingsStatusAccount" class="savings-status-line"></div>
+    
+            <div id="savingsStatusName" class="savings-status-line"></div>
+    
+        </div>
+    
+    </div>
+            
+            
+                    <button id="iHavePaidSavingsBtn" class="primary-button" type="button">
+                        Save
+                        <span>→</span>
+                    </button>
+            
+            
+                    <div id="savingsProcessing" class="savings-processing hidden">
+                        Processing your request.....
+                    </div>
+            
+                </div>
+            
+            </div>
+
+            <!-- =========================================================
+                 MY CREDIT SAVINGS DASHBOARD
+            ========================================================= -->
+            
+            <div id="savingsDashboardModal" class="modal-overlay hidden">
+            
+                <div class="modal-card savings-dashboard-card">
+            
+                    <button class="modal-close" id="closeSavingsDashboard">
+                        ×
+                    </button>
+            
+                    <div class="modal-symbol">
+                        ȼ̲
+                    </div>
+            
+                    <span class="modal-label">
+                        MY CREDIT SAVINGS
+                    </span>
+            
+                    <h2>Your Savings</h2>
+            
+            
+                    <div class="savings-total-card">
+            
+                        <!-- <span>Total Savings</span> -->
+            
+                        <strong>
+                            Total Savings <span id="savingsTotalAmount">0.00</span>
+                        </strong>
+            
+                    </div>
+            
+            
+                    <div class="savings-stat-grid">
+            
+                        <div class="savings-stat">
+            
+                            <span>Daily Interest</span>
+            
+                            <strong>
+                                Daily Interest <span id="savingsDailyInterest">0.00</span>
+                            </strong>
+            
+                        </div>
+            
+            
+                        <div class="savings-stat">
+            
+                            <span>Earned Interest</span>
+            
+                            <strong>
+                                Earned Interest <span id="savingsEarnedInterest">0.00</span>
+                            </strong>
+            
+                        </div>
+            
+                    </div>
+            
+            
+                <div class="savings-progress-box">
+                
+                    <div class="savings-progress-heading">
+                
+                        <span>Progress</span>
+                
+                        <strong id="savingsProgressText">
+                            0%
+                        </strong>
+                
+                    </div>
+                
+                    <div class="savings-progress">
+                
+                        <div id="savingsProgressBar" class="savings-progress-fill">
+                        </div>
+                
+                    </div>
+                
+                </div>
+                
+                
+                <!-- =========================================================
+                     WITHDRAW SAVINGS
+                ========================================================= -->
+                
+                <div class="savings-withdraw-section">
+                
+                    <div class="savings-withdraw-info">
+                
+                        <div class="savings-withdraw-icon">
+                            ↑
+                        </div>
+                
+                        <div>
+                            <strong>Withdraw Your Savings</strong>
+                
+                            <span>
+                                Move your saved credit back to your available balance.
+                            </span>
+                        </div>
+                
+                    </div>
+                
+                    <button type="button" id="withdrawSavingsBtn" class="savings-withdraw-btn">
+                
+                        Withdraw Savings
+                
+                        <span>→</span>
+                
+                    </button>
+                
+                </div>
+                
+                
+                <div id="zeroSavingsMessage" class="zero-savings-message hidden">
+                    You have zero credit savings.
+                </div>
+            
+            
+                    <button id="closeSavingsDashboardBtn" class="primary-button" type="button">
+                        Close
+                    </button>
+            
+                </div>
+            
+            </div>
+
+            <!-- =========================================================
+                 WITHDRAW SAVINGS MODAL
+            ========================================================= -->
+            
+            <div id="withdrawSavingsModal" class="modal-overlay hidden">
+            
+                <div class="savings-withdraw-card">
+            
+                    <button type="button" id="closeWithdrawSavingsModal" class="savings-withdraw-close">
+            
+                        ×
+            
+                    </button>
+            
+            
+                    <!-- HEADER -->
+            
+                    <div class="savings-withdraw-card-icon">
+                        ↑
+                    </div>
+            
+                    <span class="savings-withdraw-card-label">
+                        CREDIT SAVINGS
+                    </span>
+            
+                    <h2>
+                        Withdraw Savings
+                    </h2>
+            
+                    <p class="savings-withdraw-card-description">
+                        Choose how much of your saved credit you want
+                        to move back to your available balance.
+                    </p>
+            
+            
+                    <!-- AVAILABLE -->
+            
+                    <div class="savings-withdraw-available">
+            
+                        <span>
+                            Available Savings
+                        </span>
+            
+                        <strong>
+                            ȼ̲<span id="withdrawSavingsAvailable">
+                                0.00
+                            </span>
+                        </strong>
+            
+                    </div>
+            
+            
+                    <!-- QUICK AMOUNTS -->
+            
+                    <div class="savings-withdraw-quick">
+            
+                        <button type="button" class="savings-withdraw-option" data-withdraw-percent="25">
+            
+                            25%
+            
+                        </button>
+            
+                        <button type="button" class="savings-withdraw-option" data-withdraw-percent="50">
+            
+                            50%
+            
+                        </button>
+            
+                        <button type="button" class="savings-withdraw-option" data-withdraw-percent="75">
+            
+                            75%
+            
+                        </button>
+            
+                        <button type="button" class="savings-withdraw-option" data-withdraw-percent="100">
+            
+                            All
+            
+                        </button>
+            
+                    </div>
+            
+            
+                    <!-- AMOUNT -->
+            
+                    <div class="savings-withdraw-input-group">
+            
+                        <label for="withdrawSavingsAmountInput">
+                            Amount to Withdraw
+                        </label>
+            
+                        <div class="savings-withdraw-input-box">
+            
+                            <span>
+                                ȼ̲
+                            </span>
+            
+                            <input type="number" id="withdrawSavingsAmountInput" min="0.01" step="0.01" inputmode="decimal"
+                                placeholder="Enter amount">
+            
+                        </div>
+            
+                    </div>
+            
+            
+                    <!-- SUMMARY -->
+            
+                    <div class="savings-withdraw-summary">
+            
+                        <div>
+            
+                            <span>
+                                You will withdraw
+                            </span>
+            
+                            <strong>
+                                ȼ̲<span id="withdrawSavingsSummary">
+                                    0.00
+                                </span>
+                            </strong>
+            
+                        </div>
+            
+                    </div>
+            
+            
+                    <!-- ACTIONS -->
+            
+                    <div class="savings-withdraw-actions">
+            
+                        <button type="button" id="cancelWithdrawSavingsBtn" class="savings-withdraw-cancel">
+            
+                            Cancel
+            
+                        </button>
+            
+                        <button type="button" id="confirmWithdrawSavingsBtn" class="savings-withdraw-confirm">
+            
+                            Withdraw
+            
+                            <span>→</span>
+            
+                        </button>
+            
+                    </div>
+            
+            
+                    <div id="withdrawSavingsProcessing" class="withdraw-savings-processing hidden">
+            
+                        Processing your withdrawal.....
+            
+                    </div>
+            
+                </div>
+            
+            </div>
+
+            <!-- ================================================= 
+             BUY CREDIT FEATURE 
+        ================================================== -->
+
+            <section class="credit-promo">
+
+                <div class="credit-promo-glow"></div>
+
+                <div class="credit-promo-content">
+
+                    <div class="credit-badge">
+                        CREDIT
+                    </div>
+
+                    <h2>Buy Credit</h2>
+
+                    <p>
+                        Get credit today and receive your
+                        agreed repayment amount over time.
+                    </p>
+
+                    <div class="credit-note">
+                        <span>✦</span>
+                        Flexible credit plans available
+                    </div>
+
+                    <button id="buyCreditBtn" class="credit-button">
+                        View Credit Plans
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+                <div class="credit-decoration">
+                    <div class="credit-circle circle-one"></div>
+                    <div class="credit-circle circle-two"></div>
+
+                    <span>ȼ̲</span>
+                </div>
+
+            </section>
+
+
+
+            <!-- ================================================= 
+             WITHDRAW 
+        ================================================== -->
+
+            <section class="withdraw-card">
+
+                <div class="withdraw-icon">
+                    ↑
+                </div>
+
+                <div class="withdraw-info">
+                    <h3>Withdraw</h3>
+
+                    <p>
+                        Withdraw your available balance
+                        to your bank account.
+                    </p>
+                </div>
+
+                <button id="withdrawBtn" class="withdraw-arrow">
+                    →
+                </button>
+
+            </section>
+
+            <!-- ================================================= 
+             ACCOUNT ADDRESS 
+        ================================================== -->
+
+            <section class="address-card">
+
+                <div class="address-header">
+
+                    <div class="address-icon">
+                        @
+                    </div>
+
+                    <div>
+                        <h3>Account Address</h3>
+
+                        <p Style="color: rgb(26, 24, 24);">
+                            Receive credit from another
+                            Payza user.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="address-box">
+
+                    <span id="accountAddress">
+                        PAYZA-7070653390
+                    </span>
+
+                    <button class="copy-address" id="copyAddressBtn">
+                        Copy
+                    </button>
+
+                </div>
+
+            </section>
+
+            <!-- =========================================================
+                 MY CREDIT SAVINGS
+            ========================================================= -->
+            
+            <section class="savings-home-card">
+            
+                <div class="savings-home-left">
+            
+                    <div class="savings-home-icon">
+                        ȼ̲
+                    </div>
+            
+                    <div>
+                        <span>MY CREDIT SAVINGS</span>
+            
+                        <h3>
+                            <span id="homeSavingsAmount">0.00</span>
+                        </h3>
+            
+                        <small id="homeSavingsInterest">
+                            Daily interest: ȼ̲0.00
+                        </small>
+                    </div>
+            
+                </div>
+            
+                <button id="showSavingsBtn" class="savings-view-btn">
+                    View
+                    <span>→</span>
+                </button>
+            
+            </section>
+
+            <div class="bottom-space"></div>
+
+        </main>
+
+   <div class="bottom-space"></div>
+
+<!-- =========================================================
+     PWA INSTALL PROMPT
+========================================================= -->
+
+<div id="pwaInstallPrompt" class="pwa-install-prompt hidden">
+
+    <div class="pwa-install-icon">
+        P
+    </div>
+
+    <div class="pwa-install-info">
+        <strong>Install Payza</strong>
+        <span>Install Payza for a faster app experience.</span>
+    </div>
+
+    <button type="button" id="pwaInstallBtn">
+        Install
+    </button>
+
+    <button type="button" id="pwaInstallClose" aria-label="Close">
+        ×
+    </button>
+
+</div>
+
+    </div>
+
+
+
+    <!-- ========================================================= 
+     CREDIT PLAN MODAL 
+========================================================= -->
+
+    <div id="creditModal" class="modal-overlay hidden">
+
+        <div class="modal-card">
+
+            <button class="modal-close" id="closeCreditModal">
+                ×
+            </button>
+
+            <div class="modal-symbol">
+                ȼ̲
+            </div>
+
+            <span class="modal-label">
+                CREDIT
+            </span>
+
+            <h2>Choose your credit</h2>
+
+            <p class="modal-description">
+                This credit will be paid back to you
+                with the agreed return amount.
+                Interested? Select a plan below.
+            </p>
+
+
+            <div class="credit-plans">
+
+                <!-- ◈ 1,000 -->
+                <button class="credit-plan" data-amount="1000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit">ȼ̲</span>
+                        <strong>1,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 2,000 -->
+                <button class="credit-plan" data-amount="2000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>2,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 3,000 -->
+                <button class="credit-plan" data-amount="3000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>3,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 5,000 -->
+                <button class="credit-plan" data-amount="5000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>5,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 10,000 -->
+                <button class="credit-plan" data-amount="10000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>10,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 15,000 -->
+                <button class="credit-plan" data-amount="15000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>15,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 20,000 -->
+                <button class="credit-plan" data-amount="20000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit"style="font-size: 20px;">ȼ̲</span>
+                        <strong>20,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 25,000 -->
+                <button class="credit-plan" data-amount="25000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>25,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 30,000 -->
+                <button class="credit-plan" data-amount="30000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>30,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 50,000 -->
+                <button class="credit-plan" data-amount="50000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>50,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 75,000 -->
+                <button class="credit-plan" data-amount="75000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>75,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+
+                <!-- ◈ 100,000 -->
+                <button class="credit-plan" data-amount="100000">
+
+                    <div class="credit-symbol">
+                        ȼ̲
+                    </div>
+
+                    <span class="credit-availability">
+                        Available Credit
+                    </span>
+
+                    <div class="credit-amount">
+                        <span class="credit-unit" style="font-size: 20px;">ȼ̲</span>
+                        <strong>100,000</strong>
+                    </div>
+
+                    <div class="credit-meta">
+                        <span id="payza-credits">Credits</span>
+                        <span class="plan-arrow">→</span>
+                    </div>
+
+                </button>
+
+            </div>
+
+            <div class="credit-instruction">
+
+                <p>
+                    Select your Credit(s) above or enter Credit amount below
+                    and click on Proceed.
+                </p>
+
+            </div>
+
+            <div class="credit-custom-entry">
+
+                <label for="customCreditAmount">
+                    Enter Credit Amount
+                </label>
+
+                <div class="credit-input-box">
+
+                    <span class="credit-input-symbol" style="font-size: 20px;">
+                        ȼ̲
+                    </span>
+
+                    <input id="customCreditAmount" type="number" inputmode="numeric" min="1" placeholder="Enter amount">
+
+                </div>
+
+                <button id="proceedCustomCreditBtn" class="primary-button" type="button">
+                    Proceed
+                    <span>→</span>
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+<!-- =========================================================
+     SELECTED CREDIT / PAYMENT MODAL
+========================================================= -->
+
+<div id="selectedCreditModal" class="modal-overlay hidden">
+
+    <div class="selected-credit-card">
+
+        <!-- HEADER -->
+        <div class="selected-credit-header">
+
+            <div class="selected-credit-header-icon">
+                ȼ̲
+            </div>
+
+            <div>
+                <span class="selected-credit-eyebrow">
+                    PAYZA CREDIT
+                </span>
+
+                <h2>Credit Summary</h2>
+
+                <p>
+                    Review your selected credit and choose
+                    your preferred payment method.
+                </p>
+            </div>
+
+            <button type="button" id="closeSelectedModal" class="selected-credit-close">
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- CREDIT SUMMARY -->
+        <div class="credit-summary-box">
+
+            <div class="credit-summary-item">
+
+                <span class="credit-summary-label">
+                    Credit Amount
+                </span>
+
+            <strong id="selectedAmount" class="credit-amount-value">
+                <span style="font-size: 18px;">ȼ̲</span>20,000.00
+            </strong>
+
+            </div>
+
+
+            <div class="credit-summary-divider"></div>
+
+
+            <div class="credit-summary-item">
+
+                <span class="credit-summary-label">
+                    Credit Cost
+                </span>
+
+                <strong id="selectedReturn" class="credit-cost-value">
+                    ₦19,000.00
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENT SECTION -->
+        <div class="payment-method-section">
+
+            <div class="payment-section-heading">
+
+                <div>
+
+                    <span class="payment-eyebrow">
+                        SECURE PAYMENT
+                    </span>
+
+                    <h3>
+                        Choose Your Payment Method
+                    </h3>
+
+                    <p>
+                        Select how you would like to complete
+                        your credit payment.
+                    </p>
+
+                </div>
+
+                <div class="secure-payment-badge">
+                    ✓ Secure
+                </div>
+
+            </div>
+
+
+            <!-- PAYMENT OPTIONS -->
+
+            <div class="payment-options">
+
+
+                <!-- BANK TRANSFER -->
+                <button type="button" class="payment-option bank-payment-option" id="bankTransferPaymentBtn">
+
+                    <div class="payment-option-icon bank-icon">
+                        ₦
+                    </div>
+
+
+                    <div class="payment-option-content">
+
+                        <div class="payment-option-title-row">
+
+                            <h4>
+                                Bank Transfer
+                            </h4>
+
+                            <span class="payment-recommended">
+                                RECOMMENDED
+                            </span>
+
+                        </div>
+
+                        <p>
+                            Pay directly to our designated
+                            Payza bank account.
+                        </p>
+
+                        <span class="payment-option-note">
+                            Fast • Secure • Verified
+                        </span>
+
+                    </div>
+
+
+                    <div class="payment-option-arrow">
+                        →
+                    </div>
+
+                </button>
+
+
+
+                <!-- CRYPTO -->
+                <button type="button" class="payment-option crypto-payment-option" id="cryptoPaymentBtn">
+
+                    <div class="payment-option-icon crypto-icon">
+                        ₿
+                    </div>
+
+
+                    <div class="payment-option-content">
+
+                        <div class="payment-option-title-row">
+
+                            <h4>
+                                Pay With Crypto
+                            </h4>
+
+                        </div>
+
+                        <p>
+                            Complete your payment securely
+                            using cryptocurrency.
+                        </p>
+
+                        <span class="payment-option-note">
+                            Secure • Digital • Global
+                        </span>
+
+                    </div>
+
+
+                    <div class="payment-option-arrow">
+                        →
+                    </div>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- SECURITY NOTICE -->
+        <div class="payment-security-notice">
+
+            <div class="security-notice-icon">
+                ✓
+            </div>
+
+            <div>
+
+                <strong>
+                    Secure Payza Transaction
+                </strong>
+
+                <p>
+                    Your payment details are handled securely.
+                    Never share your account password with anyone.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- CANCEL -->
+        <button type="button" id="cancelSelectedCredit" class="selected-credit-cancel">
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+
+
+    <!-- ========================================================= 
+     WITHDRAW MODAL 
+========================================================= -->
+
+    <div id="withdrawModal" class="modal-overlay hidden">
+
+        <div class="modal-card">
+
+            <button class="modal-close" id="closeWithdrawModal">
+                ×
+            </button>
+
+            <div class="withdraw-modal-icon">
+                ↑
+            </div>
+
+            <span class="modal-label">
+                WITHDRAW
+            </span>
+
+            <h2>Withdraw your balance</h2>
+
+            <p class="modal-description">
+                Enter the bank account where you want
+                your available balance sent.
+            </p>
+
+
+        <div class="withdraw-balance">
+            <span>Available to withdraw</span>
+        
+            <strong>
+                ₦<span id="withdrawBalance">
+                    0.00
+                </span>
+            </strong>
+        </div>
+        
+        
+        <!-- WITHDRAWAL AMOUNT -->
+        
+        <div class="input-group">
+        
+            <label>Amount to Withdraw</label>
+        
+            <div class="input-box">
+        
+                <span class="input-icon">
+                    ₦
+                </span>
+        
+                <input id="withdrawAmount" type="number" min="1" step="0.01" inputmode="decimal"
+                    placeholder="Enter amount to withdraw">
+        
+            </div>
+        
+        </div>
+        
+        
+        <!-- WITHDRAWAL FEE -->
+        
+        <div id="withdrawFeeBox" class="withdraw-fee-box hidden">
+        
+            <div class="withdraw-fee-row">
+        
+                <span>Withdrawal Amount</span>
+        
+                <strong>
+                    ₦<span id="withdrawAmountDisplay">0.00</span>
+                </strong>
+        
+            </div>
+        
+            <div class="withdraw-fee-row">
+        
+                <span>Withdrawal Fee (5%)</span>
+        
+                <strong>
+                    ₦<span id="withdrawFeeAmount">0.00</span>
+                </strong>
+        
+            </div>
+        
+            <div class="withdraw-fee-divider"></div>
+        
+            <div class="withdraw-fee-row withdraw-you-receive">
+        
+                <span>You Will Receive</span>
+        
+                <strong>
+                    ₦<span id="withdrawReceiveAmount">0.00</span>
+                </strong>
+        
+            </div>
+        
+        </div>
+        
+        
+        <div class="input-group">
+            <label>Bank Name</label>
+
+                <div class="input-box">
+                    <input id="withdrawBank" type="text" placeholder="Enter bank name">
+                </div>
+            </div>
+
+
+            <div class="input-group">
+                <label>Account Number</label>
+
+                <div class="input-box">
+                    <input id="withdrawAccount" type="tel" inputmode="numeric" maxlength="10"
+                        placeholder="Enter account number">
+                </div>
+            </div>
+
+
+            <div class="input-group">
+                <label>Account Name</label>
+
+                <div class="input-box">
+                    <input id="withdrawName" type="text" placeholder="Enter account name">
+                </div>
+            </div>
+
+
+            <button class="primary-button" id="submitWithdrawBtn">
+                Submit Withdrawal
+                <span>→</span>
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================================= 
+     SMALL REFERRAL POPUP 
+========================================================= -->
+
+    <div id="referralModal" class="modal-overlay hidden">
+
+        <div class="modal-card referral-credit-style">
+
+            <button id="closeReferralModal" class="modal-close" type="button">
+                ×
+            </button>
+
+            <!-- BRANDED NAIRA ICON -->
+
+            <div class="referral-naira-logo">
+                ₦
+            </div>
+
+            <span class="modal-label">
+                REFERRAL
+            </span>
+
+            <h2>
+                Invite Friends
+            </h2>
+
+            <p class="modal-description">
+                Share your Payza referral link with friends
+                and invite them to join.
+            </p>
+
+            <div class="referral-credit-box">
+
+                <span>
+                    Your Referral Link
+                </span>
+
+                <strong id="referralLink">
+                    payza.app/ref/
+                </strong>
+
+            </div>
+
+            <button id="copyReferralBtn" class="primary-button referral-main-button" type="button">
+                Copy Referral Link
+                <span>↗</span>
+            </button>
+
+            <button id="cancelReferralBtn" class="referral-cancel-button" type="button">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- TOAST -->
+
+    <div id="toast" class="toast">
+        <span id="toastMessage">
+            Copied
+        </span>
+    </div>
+
+
+    <script type="module" src="app.js"></script>
+
+    <!-- =========================================================
+     BANK TRANSFER DETAILS MODAL
+========================================================= -->
+
+<div id="bankTransferModal" class="bank-transfer-modal hidden">
+
+    <div class="bank-transfer-card">
+
+        <button
+            type="button"
+            class="bank-transfer-close"
+            id="bankTransferClose">
+            ×
+        </button>
+
+        <div class="bank-transfer-icon">
+            ȼ̲
+        </div>
+
+        <span class="bank-transfer-eyebrow">
+            PAYZA CREDIT
+        </span>
+
+        <h2>Bank Transfer</h2>
+
+        <p class="bank-transfer-description">
+            Transfer the required amount to the account below.
+        </p>
+           
+        <div class="bank-payment-amount">
+        
+            <span>Credit Cost</span>
+        
+            <strong id="bankTransferPaymentAmount">
+                ₦0.00
+            </strong>
+        
+        </div>
+
+        <div class="bank-details-box">
+
+            <div class="bank-detail-row">
+
+                <div>
+                    <span>Account Number</span>
+                    <strong id="vendorAccountNumber">
+                        7070653390
+                    </strong>
+                </div>
+
+                <button
+                    type="button"
+                    id="copyVendorAccount"
+                    class="copy-account-btn">
+                    Copy
+                </button>
+
+            </div>
+
+
+            <div class="bank-detail-row">
+
+                <div>
+                    <span>Bank Name</span>
+                    <strong>
+                        Opay/Palmpay
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="bank-detail-row last">
+
+                <div>
+                    <span>Vendor Account Name</span>
+                    <strong>
+                        Paul Onyibor
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="bank-transfer-notice">
+
+            <span>✓</span>
+
+            <p>
+                Please pay for your credits using the account details
+                provided above.
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="bank-transfer-done"
+            id="bankTransferDone">
+            Payza Banking!
+        </button>
+
+    </div>
+
+</div>
+
+<!-- =========================================================
+     CRYPTO WALLET ADDRESS MODAL
+========================================================= -->
+
+<div id="cryptoWalletModal" class="crypto-wallet-modal hidden">
+
+    <div class="crypto-wallet-card">
+
+        <!-- CLOSE -->
+        <button type="button" id="cryptoWalletClose" class="crypto-wallet-close">
+            ×
+        </button>
+
+
+        <!-- HEADER -->
+        <div class="crypto-wallet-header">
+
+            <div class="crypto-wallet-icon">
+                ₿
+            </div>
+
+            <div class="crypto-wallet-title">
+
+                <span>PAYZA CRYPTO PAYMENT</span>
+
+                <h2>Wallet Address</h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- AMOUNT -->
+<div class="crypto-payment-amount">
+
+    <span>Credit Cost</span>
+
+    <strong id="cryptoPaymentAmount">
+        ₦19,000.00
+    </strong>
+
+</div>
+
+        <!-- WALLET -->
+        <div class="crypto-wallet-section">
+
+            <div class="crypto-wallet-label">
+                <span>Crypto Wallet Address</span>
+
+                <small>Send your payment to this address</small>
+            </div>
+
+
+            <div class="crypto-wallet-address-box">
+
+                <span id="cryptoWalletAddress">
+                    TVQkjSp45S53kkvpdfjieBqQYc8Txmfkt1
+                </span>
+
+                <button type="button" id="copyCryptoWalletBtn">
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- NETWORK -->
+        <div class="crypto-network">
+
+            <div>
+                <span>Network</span>
+                <strong id="cryptoNetwork">
+                    USDT / TRC20
+                </strong>
+            </div>
+
+            <div>
+                <span>Status</span>
+                <strong class="crypto-secure-status">
+                    ● Secure
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- NOTICE -->
+        <div class="crypto-wallet-notice">
+
+            <span>!</span>
+
+            <p>
+                Send only the selected cryptocurrency through
+                the network shown above.
+            </p>
+
+        </div>
+
+
+        <!-- DONE -->
+        <button type="button" id="cryptoWalletDone" class="crypto-wallet-done">
+
+            Back
+
+            <span>→</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

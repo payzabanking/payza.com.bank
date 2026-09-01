@@ -1,0 +1,3946 @@
+:root {
+
+    --primary: #1266f1;
+    --primary-dark: #0b4ec4;
+
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+
+    --text: #182230;
+    --muted: #7b8492;
+    --soft: #a0a8b4;
+
+    --border: #e8ebf0;
+
+    --success: #12a86b;
+    --success-bg: #ecfdf5;
+
+    --warning: #c98a08;
+    --warning-bg: #fff9e8;
+
+    --danger: #dc4b4b;
+    --danger-bg: #fff2f1;
+
+    --shadow:
+        0 5px 20px rgba(16, 24, 40, .045);
+
+    --shadow-hover:
+        0 12px 32px rgba(16, 24, 40, .08);
+
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    min-height: 100%;
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: var(--bg);
+
+    color: var(--text);
+
+}
+
+
+body {
+    overflow-x: hidden;
+}
+
+
+button,
+input {
+    font: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.admin-app {
+
+    min-height: 100vh;
+
+    width: 100%;
+
+}
+
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-header {
+
+    height: 68px;
+
+    width: 100%;
+
+    padding: 0 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background: rgba(255, 255, 255, .96);
+
+    border-bottom: 1px solid var(--border);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    backdrop-filter: blur(16px);
+
+}
+
+
+.header-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.brand-symbol {
+
+    width: 34px;
+
+    height: 34px;
+
+    border-radius: 10px;
+
+    display: grid;
+
+    place-items: center;
+
+    background:
+        linear-gradient(145deg,
+            #2378ff,
+            #0750c8);
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 850;
+
+    box-shadow:
+        0 5px 14px rgba(18, 102, 241, .18);
+
+}
+
+
+.brand-name {
+
+    font-size: 17px;
+
+    font-weight: 850;
+
+    letter-spacing: -.4px;
+
+}
+
+
+.header-center {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #667085;
+
+    font-size: 10px;
+
+    font-weight: 650;
+
+}
+
+
+.header-status-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--success);
+
+    box-shadow:
+        0 0 0 4px rgba(18, 168, 107, .08);
+
+}
+
+
+.header-admin {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.admin-avatar {
+
+    width: 35px;
+
+    height: 35px;
+
+    border-radius: 50%;
+
+    display: grid;
+
+    place-items: center;
+
+    background: #eaf2ff;
+
+    color: var(--primary);
+
+    font-size: 11px;
+
+    font-weight: 850;
+
+}
+
+
+.admin-details {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+}
+
+
+.admin-details strong {
+
+    font-size: 10px;
+
+}
+
+
+.admin-details span {
+
+    color: var(--muted);
+
+    font-size: 8px;
+
+}
+
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.admin-main {
+
+    width: 100%;
+
+    max-width: 1280px;
+
+    margin: 0 auto;
+
+    padding: 32px 30px 55px;
+
+}
+
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.admin-section {
+
+    display: none;
+
+}
+
+
+.admin-section.active-section {
+
+    display: block;
+
+}
+
+
+
+/* =========================================================
+   PAGE HEADING
+========================================================= */
+
+.page-heading {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 23px;
+
+}
+
+
+.heading-label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: var(--primary);
+
+    font-size: 8px;
+
+    font-weight: 850;
+
+    letter-spacing: 1.5px;
+
+}
+
+
+.page-heading h1 {
+
+    margin: 0;
+
+    color: #17202d;
+
+    font-size: 22px;
+
+    line-height: 1.2;
+
+    letter-spacing: -.55px;
+
+    font-weight: 780;
+
+}
+
+
+.page-heading p {
+
+    margin: 6px 0 0;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+}
+
+
+
+/* =========================================================
+   PENDING COUNTER
+========================================================= */
+
+.request-counter {
+
+    min-width: 84px;
+
+    padding: 10px 13px;
+
+    border: 1px solid #e5eaf2;
+
+    border-radius: 11px;
+
+    background: white;
+
+    box-shadow: var(--shadow);
+
+    text-align: center;
+
+}
+
+
+.request-counter span {
+
+    display: block;
+
+    color: #9aa2ae;
+
+    font-size: 7px;
+
+    font-weight: 850;
+
+    letter-spacing: 1px;
+
+}
+
+
+.request-counter strong {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--primary);
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+}
+
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.request-toolbar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.search-box {
+
+    width: 310px;
+
+    height: 38px;
+
+    padding: 0 11px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    transition: border-color .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.search-box:focus-within {
+
+    border-color: #b9d1fa;
+
+    box-shadow:
+        0 0 0 3px rgba(18, 102, 241, .06);
+
+}
+
+
+.search-icon {
+
+    color: #a1a8b3;
+
+    font-size: 16px;
+
+}
+
+
+.search-box input {
+
+    width: 100%;
+
+    height: 100%;
+
+    border: 0;
+
+    outline: 0;
+
+    background: transparent;
+
+    color: var(--text);
+
+    font-size: 10px;
+
+}
+
+
+.search-box input::placeholder {
+    color: #a5acb7;
+}
+
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.filter-group {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 3px;
+
+    padding: 3px;
+
+    background: #eceff3;
+
+    border-radius: 9px;
+
+}
+
+
+.filter-btn {
+
+    height: 29px;
+
+    padding: 0 11px;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #7d8591;
+
+    font-size: 8px;
+
+    font-weight: 750;
+
+    transition: .18s ease;
+
+}
+
+
+.filter-btn:hover {
+
+    color: var(--text);
+
+}
+
+
+.filter-btn.active {
+
+    color: var(--primary);
+
+    background: white;
+
+    box-shadow:
+        0 2px 5px rgba(16, 24, 40, .06);
+
+}
+
+
+
+/* =========================================================
+   REQUEST LIST
+========================================================= */
+
+.request-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+
+/* =========================================================
+   CREDIT REQUEST CARD
+========================================================= */
+
+.request-card {
+
+    position: relative;
+
+    width: 100%;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow: var(--shadow);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        border-color .18s ease;
+
+}
+
+
+.request-card:hover {
+
+    transform: translateY(-1px);
+
+    border-color: #dce2eb;
+
+    box-shadow: var(--shadow-hover);
+
+}
+
+
+.request-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 3px;
+
+    height: 100%;
+
+    background:
+        linear-gradient(180deg,
+            #1266f1,
+            #75a8ff);
+
+}
+
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.request-card-top {
+
+    min-height: 57px;
+
+    padding: 11px 14px 10px 17px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    border-bottom: 1px solid #f0f2f5;
+
+}
+
+
+.request-user {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.request-avatar {
+
+    position: relative;
+
+    width: 34px;
+
+    height: 34px;
+
+    min-width: 34px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(145deg,
+            #182536,
+            #43536a);
+
+    color: white;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+}
+
+
+.request-avatar::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 6px;
+
+    height: 6px;
+
+    right: -1px;
+
+    bottom: -1px;
+
+    border: 2px solid white;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+}
+
+
+.request-user>div:last-child {
+
+    min-width: 0;
+
+}
+
+
+.request-user strong {
+
+    display: block;
+
+    color: #202a38;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    line-height: 1.25;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.request-user span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: #9aa2ad;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.request-status {
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    min-height: 22px;
+
+    padding: 0 8px;
+
+    border-radius: 20px;
+
+    font-size: 7px;
+
+    font-weight: 850;
+
+    letter-spacing: .45px;
+
+}
+
+
+.request-status::before {
+
+    content: "";
+
+    width: 5px;
+
+    height: 5px;
+
+    border-radius: 50%;
+
+}
+
+
+.request-status.pending {
+
+    color: #9a6700;
+
+    background: var(--warning-bg);
+
+    border: 1px solid #f3e4ad;
+
+}
+
+
+.request-status.pending::before {
+    background: #eab308;
+}
+
+
+.request-status.approved {
+
+    color: #087443;
+
+    background: var(--success-bg);
+
+    border: 1px solid #c8eddb;
+
+}
+
+
+.request-status.approved::before {
+    background: #10b981;
+}
+
+
+.request-status.rejected {
+
+    color: #b42318;
+
+    background: var(--danger-bg);
+
+    border: 1px solid #f3d0cc;
+
+}
+
+
+.request-status.rejected::before {
+    background: #ef4444;
+}
+
+
+
+/* =========================================================
+   CARD INFORMATION
+========================================================= */
+
+.request-card-main {
+
+    display: grid;
+
+    grid-template-columns:
+        1.35fr 1fr 1fr 1fr;
+
+    gap: 7px;
+
+    padding: 11px 14px 10px 17px;
+
+}
+
+
+.request-info {
+
+    min-width: 0;
+
+    padding: 8px 9px;
+
+    border: 1px solid #edf0f3;
+
+    border-radius: 9px;
+
+    background: #fafbfc;
+
+}
+
+
+.request-info:first-child {
+
+    background:
+        linear-gradient(135deg,
+            #f8fbff,
+            #f2f6fc);
+
+    border-color: #e3eaf4;
+
+}
+
+
+.request-info>span {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #9ba3af;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .45px;
+
+}
+
+
+.request-info>strong {
+
+    display: block;
+
+    color: #3d4654;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.request-info:first-child>strong {
+
+    color: #162132;
+
+    font-size: 12px;
+
+    font-weight: 850;
+
+}
+
+
+
+/* =========================================================
+   PAYMENT METHOD
+========================================================= */
+
+.payment-method {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    width: fit-content;
+
+    max-width: 100%;
+
+    padding: 3px 6px;
+
+    border-radius: 5px;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.payment-method.bank {
+
+    color: #2457a6;
+
+    background: #edf4ff;
+
+    border: 1px solid #dce9fc;
+
+}
+
+
+.payment-method.crypto {
+
+    color: #7045b5;
+
+    background: #f5efff;
+
+    border: 1px solid #e9ddff;
+
+}
+
+
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+.request-card-details {
+
+    margin: 0 14px 0 17px;
+
+    padding: 8px 0;
+
+    display: grid;
+
+    grid-template-columns: 1.3fr 1fr 1fr;
+
+    gap: 12px;
+
+    border-top: 1px solid #eef0f3;
+
+    border-bottom: 1px solid #eef0f3;
+
+}
+
+
+.request-card-details>div {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+}
+
+
+.request-card-details span {
+
+    color: #a1a8b3;
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .4px;
+
+}
+
+
+.request-card-details strong {
+
+    color: #596273;
+
+    font-size: 8px;
+
+    font-weight: 650;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.device-value {
+
+    font-family: monospace;
+
+
+
+    color: #2457a6 !important;
+
+}
+
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.request-card-actions {
+
+    min-height: 49px;
+
+    padding: 8px 14px 9px 17px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 6px;
+
+}
+
+
+.request-card-actions button {
+
+    min-height: 28px;
+
+    padding: 0 10px;
+
+    border-radius: 7px;
+
+    border: 1px solid transparent;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    transition:
+        transform .16s ease,
+        box-shadow .16s ease,
+        background .16s ease;
+
+}
+
+
+.request-card-actions button:hover {
+
+    transform: translateY(-1px);
+
+}
+
+
+/* APPROVE */
+
+.request-approve-btn {
+
+    color: white;
+
+    background:
+        linear-gradient(135deg,
+            #059669,
+            #10b981);
+
+    box-shadow:
+        0 3px 8px rgba(16, 185, 129, .14);
+
+}
+
+
+.request-approve-btn:hover {
+
+    box-shadow:
+        0 5px 12px rgba(16, 185, 129, .21);
+
+}
+
+
+
+/* REJECT */
+
+.request-reject-btn {
+
+    color: white;
+
+    background:
+        linear-gradient(135deg,
+            #d94a4a,
+            #ef6262);
+
+}
+
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+
+    min-height: 230px;
+
+    padding: 30px 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-direction: column;
+
+    text-align: center;
+
+    border: 1px dashed #dfe3e9;
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, .6);
+
+}
+
+
+.empty-icon {
+
+    width: 40px;
+
+    height: 40px;
+
+    margin-bottom: 9px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 11px;
+
+    background: #f1f3f6;
+
+    color: #8993a1;
+
+    font-size: 17px;
+
+}
+
+
+.empty-icon.success {
+
+    color: var(--success);
+
+    background: var(--success-bg);
+
+}
+
+
+.empty-icon.danger {
+
+    color: var(--danger);
+
+    background: var(--danger-bg);
+
+}
+
+
+.empty-state strong {
+
+    color: #344054;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+}
+
+
+.empty-state span {
+
+    max-width: 270px;
+
+    margin-top: 4px;
+
+    color: #98a2b3;
+
+    font-size: 8px;
+
+    line-height: 1.5;
+
+}
+
+
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 500;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 18px;
+
+    background: rgba(15, 23, 42, .46);
+
+    backdrop-filter: blur(5px);
+
+}
+
+
+.modal-card {
+
+    position: relative;
+
+    width: min(520px, 100%);
+
+    max-height: 88vh;
+
+    overflow-y: auto;
+
+    padding: 22px;
+
+    border-radius: 16px;
+
+    background: white;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, .18);
+
+}
+
+
+.modal-close {
+
+    position: absolute;
+
+    top: 14px;
+
+    right: 14px;
+
+    width: 30px;
+
+    height: 30px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    background: #f2f4f7;
+
+    color: #667085;
+
+    font-size: 17px;
+
+}
+
+
+.modal-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding-right: 35px;
+
+}
+
+
+.modal-icon {
+
+    width: 39px;
+
+    height: 39px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 10px;
+
+    background: #edf4ff;
+
+    color: var(--primary);
+
+    font-size: 13px;
+
+    font-weight: 850;
+
+}
+
+
+.modal-heading span {
+
+    display: block;
+
+    color: var(--primary);
+
+    font-size: 7px;
+
+    font-weight: 850;
+
+    letter-spacing: 1px;
+
+}
+
+
+.modal-heading h2 {
+
+    margin: 3px 0 0;
+
+    font-size: 17px;
+
+}
+
+
+.request-modal-content {
+
+    margin-top: 18px;
+
+}
+
+
+
+/* =========================================================
+   CONFIRMATION
+========================================================= */
+
+.confirmation-card {
+
+    max-width: 360px;
+
+    text-align: center;
+
+}
+
+
+.confirmation-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    margin: 0 auto 12px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 13px;
+
+    background: var(--warning-bg);
+
+    color: var(--warning);
+
+    font-weight: 850;
+
+}
+
+
+.confirmation-card h2 {
+
+    margin: 0;
+
+    font-size: 17px;
+
+}
+
+
+.confirmation-card p {
+
+    margin: 7px auto 0;
+
+    max-width: 290px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    line-height: 1.55;
+
+}
+
+
+.confirmation-actions {
+
+    display: flex;
+
+    gap: 7px;
+
+    margin-top: 19px;
+
+}
+
+
+/* =========================================================
+   CONFIRMATION ACTION BUTTONS
+   BUTTON DESIGN ONLY
+========================================================= */
+
+.secondary-btn,
+.danger-btn {
+
+    height: 38px;
+
+    flex: 1;
+
+    border-radius: 9px;
+
+    font-size: 9px;
+
+    font-weight: 850;
+
+    border: 1px solid transparent;
+
+    transition:
+        transform .16s ease,
+        box-shadow .16s ease,
+        background .16s ease;
+
+}
+
+
+/* =========================================================
+   CANCEL
+========================================================= */
+
+.secondary-btn {
+
+    color: #d4dbe5;
+
+    background: #303b4c;
+
+    border-color: #435066;
+
+}
+
+
+.secondary-btn:hover {
+
+    background: #39475a;
+
+    border-color: #526178;
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   APPROVE
+========================================================= */
+
+.confirmation-actions .primary-btn {
+
+    color: #ffffff;
+
+    background: #1266f1;
+
+    border: 1px solid #1266f1;
+
+    border-radius: 9px;
+
+    box-shadow:
+        0 4px 10px rgba(18, 102, 241, .18);
+
+}
+
+
+.confirmation-actions .primary-btn:hover {
+
+    background: #0b4ec4;
+
+    border-color: #0b4ec4;
+
+    border-radius: 9px;
+
+    box-shadow:
+        0 6px 14px rgba(18, 102, 241, .24);
+
+    transform: translateY(-1px);
+
+}
+
+/* =========================================================
+   ERROR TOAST
+========================================================= */
+
+.admin-toast {
+
+    position: fixed;
+
+    right: 20px;
+    bottom: 20px;
+
+    z-index: 9999;
+
+    min-width: 285px;
+    max-width: 360px;
+
+    padding: 13px 15px;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    border: 1px solid #49313a;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(145deg,
+            #211d27,
+            #2b222a);
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, .25);
+
+    transform: translateY(20px);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: .25s ease;
+
+}
+
+
+.admin-toast.show {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+}
+
+
+/* =========================================================
+   ERROR ICON
+========================================================= */
+
+.toast-icon {
+
+    width: 32px;
+    height: 32px;
+
+    min-width: 32px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 9px;
+
+    color: #ff7777;
+
+    background: #38252b;
+
+    border: 1px solid #5a343d;
+
+    font-size: 12px;
+
+    font-weight: 850;
+
+}
+
+
+/* =========================================================
+   ERROR CONTENT
+========================================================= */
+
+.admin-toast strong {
+
+    display: block;
+
+    color: #ffffff;
+
+    font-size: 10px;
+
+    font-weight: 850;
+
+    line-height: 1.25;
+
+}
+
+
+.admin-toast span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    color: #c4bfc5;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+    line-height: 1.45;
+
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .admin-main {
+
+        padding:
+            25px 20px 45px;
+
+    }
+
+
+    .request-card-main {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+
+    .request-card-details {
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .admin-header {
+
+        height: 60px;
+
+        padding:
+            0 15px;
+
+    }
+
+
+    .brand-symbol {
+
+        width: 31px;
+
+        height: 31px;
+
+        border-radius: 9px;
+
+    }
+
+
+    .brand-name {
+
+        font-size: 15px;
+
+    }
+
+
+    .header-center {
+
+        display: none;
+
+    }
+
+
+    .admin-details {
+
+        display: none;
+
+    }
+
+
+    .admin-avatar {
+
+        width: 32px;
+
+        height: 32px;
+
+    }
+
+
+    .admin-main {
+
+        padding:
+            21px 14px 40px;
+
+    }
+
+
+    .page-heading {
+
+        align-items: flex-start;
+
+        margin-bottom: 17px;
+
+    }
+
+
+    .page-heading h1 {
+
+        font-size: 19px;
+
+    }
+
+
+    .page-heading p {
+
+        font-size: 9px;
+
+    }
+
+
+    .request-counter {
+
+        min-width: 66px;
+
+        padding: 8px;
+
+    }
+
+
+    .request-counter strong {
+
+        font-size: 15px;
+
+    }
+
+
+    .request-toolbar {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .search-box {
+
+        width: 100%;
+
+    }
+
+
+    .filter-group {
+
+        width: 100%;
+
+        overflow-x: auto;
+
+    }
+
+
+    .filter-btn {
+
+        flex: 1;
+
+        min-width: 65px;
+
+    }
+
+
+    .request-card-top {
+
+        padding:
+            10px 11px 9px 14px;
+
+    }
+
+
+    .request-card-main {
+
+        grid-template-columns:
+            1fr 1fr;
+
+        padding:
+            9px 11px 9px 14px;
+
+    }
+
+
+    .request-card-details {
+
+        grid-template-columns:
+            1fr 1fr;
+
+        margin:
+            0 11px 0 14px;
+
+    }
+
+
+    .request-card-actions {
+
+        padding:
+            8px 11px 9px 14px;
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .request-card-actions button {
+
+        flex: 1;
+
+        min-width: 70px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .page-heading {
+
+        gap: 8px;
+
+    }
+
+
+    .page-heading h1 {
+
+        font-size: 18px;
+
+    }
+
+
+    .request-counter {
+
+        min-width: 58px;
+
+    }
+
+
+    .request-counter span {
+
+        font-size: 6px;
+
+    }
+
+
+    .request-card-main {
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 5px;
+
+    }
+
+
+    .request-info {
+
+        padding:
+            7px;
+
+    }
+
+
+    .request-info:first-child>strong {
+
+        font-size: 11px;
+
+    }
+
+
+    .request-info>strong {
+
+        font-size: 8px;
+
+    }
+
+
+    .request-card-details {
+
+        grid-template-columns:
+            1fr;
+
+        gap: 7px;
+
+    }
+
+
+    .request-card-actions {
+
+        display: grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+}
+
+/* =========================================================
+   VIEW BUTTON
+========================================================= */
+
+.request-view-btn {
+
+    color: #2457a6;
+
+    background: #edf4ff;
+
+    border: 1px solid #d7e6fc !important;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 2px 6px rgba(18, 102, 241, .06);
+
+}
+
+
+.request-view-btn:hover {
+
+    color: #174a91;
+
+    background: #e3efff;
+
+    border-color: #c6dbf8 !important;
+
+    box-shadow:
+        0 4px 10px rgba(18, 102, 241, .10);
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   DELETE BUTTON
+========================================================= */
+
+.request-delete-btn {
+
+    color: #b42318;
+
+    background: #fff2f1;
+
+    border: 1px solid #f3d0cc !important;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 2px 6px rgba(220, 75, 75, .05);
+
+}
+
+
+.request-delete-btn:hover {
+
+    color: #981b12;
+
+    background: #ffe7e5;
+
+    border-color: #e9b8b3 !important;
+
+    box-shadow:
+        0 4px 10px rgba(220, 75, 75, .10);
+
+    transform: translateY(-1px);
+
+}
+
+/* =========================================================
+   PAYZA VISIBILITY REFINEMENT
+   EXISTING SIZES / SPACING / LAYOUT REMAIN UNCHANGED
+   ONLY LOW-CONTRAST TEXT COLORS ARE STRENGTHENED
+========================================================= */
+
+/* PAGE HEADING */
+.page-heading .heading-label {
+    color: #0b4ec4;
+}
+
+.page-heading h1 {
+    color: #101828;
+}
+
+.page-heading p {
+    color: #596579;
+}
+
+/* PENDING COUNTER */
+.request-counter span {
+    color: #667085;
+}
+
+.request-counter strong {
+    color: #0b5ed7;
+}
+
+/* SEARCH */
+.search-icon {
+    color: #667085;
+}
+
+.search-box input {
+    color: #182230;
+}
+
+.search-box input::placeholder {
+    color: #667085;
+    opacity: 1;
+}
+
+/* FILTERS */
+.filter-btn {
+    color: #596579;
+}
+
+.filter-btn:hover {
+    color: #182230;
+}
+
+.filter-btn.active {
+    color: #0b5ed7;
+}
+
+/* REQUEST CARD USER */
+.request-user strong {
+    color: #182230;
+}
+
+.request-user span {
+    color: #667085;
+}
+
+/* REQUEST STATUS */
+.request-status.pending {
+    color: #8a5a00;
+}
+
+.request-status.approved {
+    color: #087443;
+}
+
+.request-status.rejected {
+    color: #b42318;
+}
+
+/* REQUEST INFORMATION */
+.request-info>span {
+    color: #667085;
+}
+
+.request-info>strong {
+    color: #344054;
+}
+
+.request-info:first-child>strong {
+    color: #101828;
+}
+
+/* PAYMENT METHOD */
+.payment-method.bank {
+    color: #2457a6;
+}
+
+.payment-method.crypto {
+    color: #7045b5;
+}
+
+/* DETAILS */
+.request-card-details span {
+    color: #667085;
+}
+
+.request-card-details strong {
+    color: #475467;
+}
+
+.device-value {
+    color: #2457a6 !important;
+}
+
+/* EMPTY STATES */
+.empty-state strong {
+    color: #344054;
+}
+
+.empty-state span {
+    color: #667085;
+}
+
+/* HEADER VISIBILITY */
+.header-center {
+    color: #596579;
+}
+
+.admin-details strong {
+    color: #182230;
+}
+
+.admin-details span {
+    color: #667085;
+}
+
+/* =========================================================
+   PAYZA CREDIT REQUEST CARD
+   DESIGN ONLY — NO STRUCTURE CHANGES
+========================================================= */
+
+.request-modal-content {
+    width: 100%;
+    margin: 0;
+}
+
+
+/* =========================================================
+   ORIGINAL CARD GRID
+========================================================= */
+
+.request-detail-grid {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   ORIGINAL DETAIL CARDS
+========================================================= */
+
+.request-detail-grid>div {
+
+    min-width: 0;
+
+    padding: 12px 13px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e7ebf0;
+
+    border-radius: 11px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LABEL TEXT
+========================================================= */
+
+.request-detail-grid>div>span {
+
+    display: block;
+
+    margin: 0 0 5px 0;
+
+    color: #8993a1;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.55px;
+
+    text-transform: uppercase;
+
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   VALUE TEXT
+========================================================= */
+
+.request-detail-grid>div>strong {
+
+    display: block;
+
+    margin: 0;
+
+    color: #202733;
+
+    font-size: 12px;
+
+    font-weight: 750;
+
+    line-height: 1.3;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   ACCOUNT NAME
+========================================================= */
+
+.request-detail-grid>div:nth-child(1)>strong {
+
+    color: #111827;
+
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   ACCOUNT ADDRESS
+========================================================= */
+
+.request-detail-grid>div:nth-child(2)>strong {
+
+    color: #374151;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CREDIT AMOUNT
+========================================================= */
+
+.request-detail-grid>div:nth-child(3) {
+
+    background: #f6f9fc;
+}
+
+.request-detail-grid>div:nth-child(3)>strong {
+
+    color: #111827;
+
+    font-size: 18px;
+
+    font-weight: 850;
+
+    letter-spacing: -0.2px;
+}
+
+
+/* =========================================================
+   CREDIT COST
+========================================================= */
+
+.request-detail-grid>div:nth-child(4)>strong {
+
+    color: #293241;
+
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   PAYMENT METHOD
+========================================================= */
+
+.request-detail-grid>div:nth-child(5)>strong {
+
+    color: #344054;
+
+    font-size: 11px;
+
+    font-weight: 750;
+
+    text-transform: none;
+}
+
+
+/* =========================================================
+   DEVICE ID
+========================================================= */
+
+.request-detail-grid>div:nth-child(6)>strong {
+
+    color: #687385;
+
+    font-family: monospace;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.request-detail-grid>div:nth-child(7)>strong {
+
+    display: inline-block;
+
+    padding: 4px 8px;
+
+    border-radius: 6px;
+
+    background: #fff5d9;
+
+    color: #996900;
+
+    font-size: 9px;
+
+    font-weight: 850;
+
+    letter-spacing: 0.6px;
+
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   REQUESTED
+========================================================= */
+
+.request-detail-grid>div:nth-child(8)>strong {
+
+    color: #374151;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   MOBILE
+   KEEP SAME CARD SIZE BEHAVIOR
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .request-detail-grid {
+
+        grid-template-columns: 1fr 1fr;
+
+        gap: 8px;
+    }
+
+    .request-detail-grid>div {
+
+        padding: 10px 11px;
+    }
+
+    .request-detail-grid>div:nth-child(3)>strong {
+
+        font-size: 16px;
+    }
+
+}
+
+/* =========================================================
+   WITHDRAWAL REQUESTS
+   PAYZA ADMIN DESIGN
+========================================================= */
+
+#withdrawalsSection {
+    width: 100%;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+#withdrawalsSection .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+
+#withdrawalsSection .section-header h2 {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+
+#withdrawalsSection .section-header p {
+    margin: 7px 0 0;
+    font-size: 14px;
+    opacity: 0.68;
+}
+
+
+/* =========================================================
+   TOTAL REQUESTS CARD
+========================================================= */
+
+.withdrawal-total-card {
+    min-width: 125px;
+    padding: 13px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    background: rgba(255, 255, 255, 0.72);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+}
+
+
+.withdrawal-total-card span {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.55;
+}
+
+
+.withdrawal-total-card strong {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.withdrawal-toolbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.64);
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.withdrawal-filters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+.withdrawal-filter-btn {
+    border: 0;
+    outline: none;
+    background: transparent;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.withdrawal-filter-btn:hover {
+    background: rgba(0, 0, 0, 0.045);
+}
+
+
+.withdrawal-filter-btn:active {
+    transform: scale(0.97);
+}
+
+
+.withdrawal-filter-btn.active {
+    background: #111;
+    color: #fff;
+    box-shadow:
+        0 5px 14px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.withdrawal-search-box {
+    height: 40px;
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 13px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.85);
+    box-sizing: border-box;
+}
+
+
+.withdrawal-search-box span {
+    font-size: 18px;
+    opacity: 0.5;
+}
+
+
+.withdrawal-search-box input {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+}
+
+
+.withdrawal-search-box input::placeholder {
+    opacity: 0.5;
+}
+
+
+/* =========================================================
+   REQUEST LIST
+========================================================= */
+
+.withdrawal-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    #withdrawalsSection .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .withdrawal-total-card {
+        width: 100%;
+        align-items: flex-start;
+        box-sizing: border-box;
+    }
+
+
+    .withdrawal-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+
+    .withdrawal-filters {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+
+    .withdrawal-filter-btn {
+        flex: 0 0 auto;
+    }
+
+
+    .withdrawal-search-box {
+        width: 100%;
+        min-width: 0;
+    }
+
+}
+
+/* =========================================================
+   WITHDRAWAL REQUESTS TOOLBAR
+========================================================= */
+
+.withdrawal-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+}
+
+
+/* =========================================================
+   WITHDRAWAL REQUEST COUNT
+========================================================= */
+
+.withdrawal-heading-count {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+    padding: 7px 12px;
+    border-radius: 10px;
+    background: #f5f7fa;
+    border: 1px solid #e6e9ee;
+}
+
+
+.withdrawal-count-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    color: #7a828e;
+}
+
+
+.withdrawal-heading-count strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    border-radius: 7px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   WITHDRAWAL FILTERS
+========================================================= */
+
+.withdrawal-filters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+
+.withdrawal-filter-btn {
+    border: 1px solid #e3e6eb;
+    background: #ffffff;
+    color: #68707c;
+    padding: 9px 15px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.withdrawal-filter-btn:hover {
+    border-color: #cfd4dc;
+    background: #f7f8fa;
+}
+
+
+.withdrawal-filter-btn.active {
+    background: #111827;
+    border-color: #111827;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   WITHDRAWAL SEARCH
+========================================================= */
+
+.withdrawal-search-box {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-left: auto;
+    min-width: 220px;
+    height: 40px;
+    padding: 0 13px;
+    border: 1px solid #e3e6eb;
+    border-radius: 9px;
+    background: #ffffff;
+}
+
+
+.withdrawal-search-box span {
+    color: #8a929d;
+    font-size: 18px;
+    line-height: 1;
+}
+
+
+.withdrawal-search-box input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #20242a;
+    font-size: 13px;
+}
+
+
+.withdrawal-search-box input::placeholder {
+    color: #9aa1aa;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .withdrawal-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .withdrawal-heading-count {
+        order: 1;
+    }
+
+    .withdrawal-filters {
+        order: 2;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+
+    .withdrawal-search-box {
+        order: 3;
+        width: 100%;
+        margin-left: 0;
+    }
+
+}
+
+/* =========================================================
+   PAYZA SETTINGS — COMPACT CARD
+   SAME VISUAL SCALE AS OTHER DASHBOARD CARDS
+========================================================= */
+
+.settings-section {
+    width: 100%;
+    padding: 0;
+}
+
+
+/* =========================================================
+   MAIN SETTINGS CARD
+========================================================= */
+
+.settings-card {
+    width: 100%;
+    max-width: 100%;
+
+    margin: 0;
+
+    background: #ffffff;
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   SETTINGS HEADER
+========================================================= */
+
+.settings-card-header {
+    min-height: 57px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px 14px 10px 17px;
+
+    background: #fafbfc;
+
+    border-bottom: 1px solid #f0f2f5;
+}
+
+
+.settings-header-icon {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #edf4ff;
+
+    color: var(--primary);
+
+    font-size: 14px;
+}
+
+
+.settings-header-content {
+    min-width: 0;
+}
+
+
+.settings-header-content h2 {
+    margin: 0;
+
+    color: #182230;
+
+    font-size: 12px;
+    line-height: 1.25;
+
+    font-weight: 800;
+
+    letter-spacing: -.15px;
+}
+
+
+.settings-header-content p {
+    margin: 2px 0 0;
+
+    color: #667085;
+
+    font-size: 8px;
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   SETTINGS BODY
+========================================================= */
+
+.settings-card-body {
+    padding: 10px 14px 11px 17px;
+}
+
+
+/* =========================================================
+   SETTING ROW
+========================================================= */
+
+.setting-item {
+    min-height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 7px 0;
+
+    border-bottom: 1px solid #eef0f3;
+}
+
+
+.setting-item:first-child {
+    padding-top: 0;
+}
+
+
+.setting-item:last-of-type {
+    padding-bottom: 8px;
+}
+
+
+/* =========================================================
+   SETTING INFORMATION
+========================================================= */
+
+.setting-item-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.setting-item-icon {
+    width: 30px;
+    height: 30px;
+
+    flex: 0 0 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #f4f6f8;
+
+    color: #344054;
+
+    font-size: 12px;
+}
+
+
+.setting-item-info h3 {
+    margin: 0;
+
+    color: #182230;
+
+    font-size: 10px;
+    line-height: 1.2;
+
+    font-weight: 750;
+}
+
+
+.setting-item-info p {
+    margin: 2px 0 0;
+
+    max-width: 350px;
+
+    color: #667085;
+
+    font-size: 7.5px;
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.setting-item-control {
+    width: 145px;
+
+    flex: 0 0 145px;
+}
+
+
+.setting-item-control label {
+    display: none;
+}
+
+
+.settings-input {
+    width: 100%;
+    height: 32px;
+
+    padding: 0 9px;
+
+    border: 1px solid #e1e5ea;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #182230;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    outline: none;
+
+    transition:
+        border-color .15s ease,
+        box-shadow .15s ease;
+}
+
+
+.settings-input:hover {
+    border-color: #cfd5dd;
+}
+
+
+.settings-input:focus {
+    border-color: #1266f1;
+
+    box-shadow:
+        0 0 0 2px rgba(18, 102, 241, .06);
+}
+
+
+/* =========================================================
+   LIVE PREVIEW
+========================================================= */
+
+.settings-preview {
+    margin-top: 9px;
+
+    padding: 9px;
+
+    border-radius: 10px;
+
+    background: #f8f9fa;
+
+    border: 1px solid #edf0f3;
+}
+
+
+.settings-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 7px;
+}
+
+
+.preview-label {
+    display: block;
+
+    margin-bottom: 1px;
+
+    color: #8993a1;
+
+    font-size: 6.5px;
+    font-weight: 800;
+
+    letter-spacing: .1em;
+}
+
+
+.settings-preview-header h3 {
+    margin: 0;
+
+    color: #344054;
+
+    font-size: 9px;
+
+    font-weight: 750;
+}
+
+
+.preview-status {
+    padding: 3px 6px;
+
+    border-radius: 999px;
+
+    background: #ffffff;
+
+    border: 1px solid #e7ebef;
+
+    color: #667085;
+
+    font-size: 6.5px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PREVIEW BOXES
+========================================================= */
+
+.settings-preview-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 6px;
+}
+
+
+.preview-box {
+    min-width: 0;
+
+    padding: 7px 8px;
+
+    background: #ffffff;
+
+    border: 1px solid #edf0f3;
+
+    border-radius: 8px;
+}
+
+
+.preview-box span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #8993a1;
+
+    font-size: 6.5px;
+    font-weight: 650;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.preview-box strong {
+    display: block;
+
+    color: #202733;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   UPDATE AREA
+========================================================= */
+
+.settings-save-area {
+    min-height: 34px;
+
+    display: flex;
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    padding-top: 9px;
+}
+
+
+.settings-status {
+    margin-right: auto;
+
+    min-height: 13px;
+
+    color: #667085;
+
+    font-size: 7.5px;
+    font-weight: 650;
+}
+
+
+.settings-status.success {
+    color: #16803c;
+}
+
+
+/* =========================================================
+   UPDATE BUTTON
+========================================================= */
+
+.settings-update-btn {
+    height: 30px;
+
+    min-width: 125px;
+
+    padding: 0 11px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    background: #111827;
+
+    color: #ffffff;
+
+    font-size: 8.5px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        background .15s ease,
+        opacity .15s ease;
+}
+
+
+.settings-update-btn:hover {
+    background: #1d2939;
+
+    transform: translateY(-1px);
+}
+
+
+.settings-update-btn:active {
+    transform: translateY(0);
+}
+
+
+.settings-update-btn:disabled {
+    opacity: .55;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+.settings-update-icon {
+    width: 14px;
+    height: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, .13);
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   SETTINGS SIDEBAR BUTTON
+========================================================= */
+
+/* =========================================================
+   PAYZA HEADER SETTINGS BUTTON
+========================================================= */
+
+.admin-settings-btn {
+
+    height: 36px;
+
+    padding: 0 11px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    border: 1px solid #e3e8ef;
+
+    border-radius: 9px;
+
+    background: #f8fafc;
+
+    color: #596579;
+
+    font-size: 9px;
+
+    font-weight: 750;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 6px rgba(16, 24, 40, .035);
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        color .18s ease,
+        box-shadow .18s ease,
+        transform .18s ease;
+
+}
+
+
+/* =========================================================
+   SETTINGS ICON
+========================================================= */
+
+.admin-settings-icon {
+
+    width: 25px;
+    height: 25px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: #edf4ff;
+
+    color: #1266f1;
+
+    font-size: 13px;
+
+    line-height: 1;
+
+    transition:
+        background .18s ease,
+        color .18s ease,
+        transform .2s ease;
+
+}
+
+
+/* =========================================================
+   SETTINGS TEXT
+========================================================= */
+
+.admin-settings-text {
+
+    display: inline-block;
+
+    color: #475467;
+
+    font-size: 9px;
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.admin-settings-btn:hover {
+
+    background: #ffffff;
+
+    border-color: #cfd9e7;
+
+    color: #182230;
+
+    box-shadow:
+        0 4px 11px rgba(16, 24, 40, .07);
+
+    transform: translateY(-1px);
+
+}
+
+
+.admin-settings-btn:hover .admin-settings-icon {
+
+    background: #1266f1;
+
+    color: #ffffff;
+
+    transform: rotate(12deg);
+
+}
+
+
+.admin-settings-btn:hover .admin-settings-text {
+
+    color: #182230;
+
+}
+
+
+/* =========================================================
+   ACTIVE / OPEN SETTINGS
+========================================================= */
+
+.admin-settings-btn.active {
+
+    background: #edf4ff;
+
+    border-color: #cfe0fb;
+
+    color: #0b4ec4;
+
+    box-shadow:
+        0 3px 9px rgba(18, 102, 241, .08);
+
+}
+
+
+.admin-settings-btn.active .admin-settings-icon {
+
+    background: #1266f1;
+
+    color: #ffffff;
+
+    transform: none;
+
+}
+
+
+.admin-settings-btn.active .admin-settings-text {
+
+    color: #0b4ec4;
+
+}
+
+
+/* =========================================================
+   CLICK
+========================================================= */
+
+.admin-settings-btn:active {
+
+    transform: translateY(0);
+
+    box-shadow:
+        0 2px 5px rgba(16, 24, 40, .05);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .admin-settings-btn {
+
+        height: 34px;
+
+        padding: 0 8px;
+
+        gap: 5px;
+
+        border-radius: 8px;
+
+        font-size: 8px;
+
+    }
+
+
+    .admin-settings-icon {
+
+        width: 23px;
+        height: 23px;
+
+        border-radius: 6px;
+
+        font-size: 12px;
+
+    }
+
+
+    .admin-settings-text {
+
+        font-size: 8px;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .settings-section {
+        padding: 0;
+    }
+
+
+    .settings-card {
+        width: 100%;
+
+        border-radius: 13px;
+    }
+
+
+    .settings-card-header {
+        min-height: 52px;
+
+        padding: 9px 11px 9px 14px;
+    }
+
+
+    .settings-header-icon {
+        width: 31px;
+        height: 31px;
+
+        flex-basis: 31px;
+
+        border-radius: 8px;
+
+        font-size: 12px;
+    }
+
+
+    .settings-header-content h2 {
+        font-size: 11px;
+    }
+
+
+    .settings-header-content p {
+        font-size: 7px;
+    }
+
+
+    .settings-card-body {
+        padding: 9px 11px 10px 14px;
+    }
+
+
+    .setting-item {
+        min-height: 40px;
+
+        gap: 9px;
+
+        padding: 6px 0;
+    }
+
+
+    .setting-item-info {
+        gap: 7px;
+    }
+
+
+    .setting-item-icon {
+        width: 28px;
+        height: 28px;
+
+        flex-basis: 28px;
+
+        font-size: 11px;
+    }
+
+
+    .setting-item-info h3 {
+        font-size: 9px;
+    }
+
+
+    .setting-item-info p {
+        display: none;
+    }
+
+
+    .setting-item-control {
+        width: 120px;
+
+        flex-basis: 120px;
+    }
+
+
+    .settings-input {
+        height: 30px;
+
+        padding: 0 8px;
+
+        font-size: 9px;
+    }
+
+
+    .settings-preview {
+        margin-top: 8px;
+
+        padding: 8px;
+    }
+
+
+    .settings-preview-grid {
+        gap: 5px;
+    }
+
+
+    .preview-box {
+        padding: 7px;
+    }
+
+
+    .preview-box span {
+        font-size: 6px;
+    }
+
+
+    .preview-box strong {
+        font-size: 8px;
+    }
+
+
+    .settings-save-area {
+        padding-top: 8px;
+    }
+
+
+    .settings-update-btn {
+        min-width: 115px;
+
+        height: 29px;
+
+        font-size: 8px;
+    }
+
+}
+
+/* =========================================================
+   PAYZA SETTINGS — TEXT COLOR REFINEMENT
+   MATCHES THE MAIN ADMIN DESIGN
+========================================================= */
+
+
+/* =========================================================
+   SETTINGS HEADER
+========================================================= */
+
+.settings-header-icon {
+    background: #edf4ff;
+    color: #1266f1;
+}
+
+
+.settings-header-content h2 {
+    color: #101828;
+}
+
+
+.settings-header-content p {
+    color: #667085;
+}
+
+
+/* =========================================================
+   SETTING ITEMS
+========================================================= */
+
+.setting-item-icon {
+    background: #f1f5f9;
+    color: #1266f1;
+}
+
+
+.setting-item-info h3 {
+    color: #182230;
+}
+
+
+.setting-item-info p {
+    color: #667085;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.settings-input {
+    color: #182230;
+    background: #ffffff;
+    border-color: #dfe4ea;
+}
+
+
+.settings-input::placeholder {
+    color: #98a2b3;
+    opacity: 1;
+}
+
+
+.settings-input:hover {
+    border-color: #c8d2df;
+}
+
+
+.settings-input:focus {
+    color: #101828;
+    border-color: #1266f1;
+
+    box-shadow:
+        0 0 0 3px rgba(18, 102, 241, .08);
+}
+
+
+/* =========================================================
+   LIVE PREVIEW
+========================================================= */
+
+.settings-preview {
+    background: #f8fafc;
+    border-color: #e6eaf0;
+}
+
+
+.preview-label {
+    color: #1266f1;
+}
+
+
+.settings-preview-header h3 {
+    color: #182230;
+}
+
+
+.preview-status {
+    color: #596579;
+    background: #ffffff;
+    border-color: #e1e6ec;
+}
+
+
+/* =========================================================
+   PREVIEW BOXES
+========================================================= */
+
+.preview-box {
+    background: #ffffff;
+    border-color: #e5e9ef;
+}
+
+
+.preview-box span {
+    color: #667085;
+}
+
+
+.preview-box strong {
+    color: #101828;
+}
+
+
+/* AVAILABLE BALANCE */
+
+#currencyPreviewBalance {
+    color: #1266f1;
+}
+
+
+/* WITHDRAWAL */
+
+#currencyPreviewWithdrawal {
+    color: #12a86b;
+}
+
+
+/* ACCOUNT NUMBER COST */
+
+#currencyPreviewAccountCost {
+    color: #182230;
+}
+
+
+/* =========================================================
+   UPDATE STATUS
+========================================================= */
+
+.settings-status {
+    color: #667085;
+}
+
+
+.settings-status.success {
+    color: #12a86b;
+}
+
+
+/* =========================================================
+   UPDATE BUTTON
+========================================================= */
+
+.settings-update-btn {
+    background:
+        linear-gradient(135deg,
+            #1266f1,
+            #0b4ec4);
+
+    color: #ffffff;
+
+    box-shadow:
+        0 4px 10px rgba(18, 102, 241, .16);
+}
+
+
+.settings-update-btn:hover {
+    background:
+        linear-gradient(135deg,
+            #0b5ed7,
+            #0847b5);
+
+    box-shadow:
+        0 6px 14px rgba(18, 102, 241, .22);
+}
+
+
+.settings-update-icon {
+    background: rgba(255, 255, 255, .15);
+    color: #ffffff;
+}

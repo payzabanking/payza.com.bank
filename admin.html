@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payza Admin</title>
+
+    <link rel="stylesheet" href="./admin.css">
+
+</head>
+
+
+<body>
+
+
+    <div class="admin-app">
+
+
+        <!-- =================================================
+         TOP HEADER
+    ================================================== -->
+
+<!-- =================================================
+     ADMIN SIDEBAR
+================================================== -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-menu">
+
+    </div>
+
+</aside>
+
+        <header class="admin-header">
+
+            <div class="header-brand">
+
+                <div class="brand-symbol">
+                    P
+                </div>
+
+                <div class="brand-name">
+                    Payza
+                </div>
+
+            </div>
+
+
+            <div class="header-center">
+
+                <span class="header-status-dot"></span>
+
+                <span>
+                    System Online
+                </span>
+
+            </div>
+
+
+        <div class="header-admin">
+        
+            <div class="admin-profile">
+        
+                <div class="admin-avatar">
+                    A
+                </div>
+        
+                <div class="admin-details">
+        
+                    <strong>
+                        Administrator
+                    </strong>
+        
+                    <span>
+                        Admin
+                    </span>
+        
+                </div>
+        
+            </div>
+        
+            <!-- SETTINGS -->
+            <button type="button" class="admin-settings-btn" data-section="settingsSection">
+        
+                <span class="admin-settings-icon">
+                    ⚙
+                </span>
+        
+                <span class="admin-settings-text">
+                    Settings
+                </span>
+        
+            </button>
+        
+        </div>
+
+
+        </header>
+
+
+
+        <!-- =================================================
+         MAIN CONTENT
+    ================================================== -->
+
+        <main class="admin-main">
+
+
+            <!-- =================================================
+             CREDIT REQUESTS
+        ================================================== -->
+
+            <section id="requestsSection" class="admin-section active-section">
+
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <span class="heading-label">
+                            PAYZA OPERATIONS
+                        </span>
+
+                        <h1>
+                            Manage Credit Requests
+                        </h1>
+
+                        <p>
+                            Review, approve, or decline incoming credit requests.
+                        </p>
+
+                    </div>
+
+
+                    <div class="request-counter">
+
+                        <span>
+                            PENDING
+                        </span>
+
+                        <strong id="pendingStat">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                 REQUEST TOOLBAR
+            ================================================== -->
+
+                <div class="request-toolbar">
+
+
+                    <div class="search-box">
+
+                        <span class="search-icon">
+                            ⌕
+                        </span>
+
+                        <input type="search" id="requestSearch" placeholder="Search requests...">
+
+                    </div>
+
+
+                    <div class="filter-group">
+
+                        <button class="filter-btn active" data-filter="all">
+                            All
+                        </button>
+
+                        <button class="filter-btn" data-filter="pending">
+                            Pending
+                        </button>
+
+                        <button class="filter-btn" data-filter="approved">
+                            Approved
+                        </button>
+
+                        <button class="filter-btn" data-filter="rejected">
+                            Rejected
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                 REQUEST LIST
+            ================================================== -->
+
+                <div id="requestList" class="request-list">
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ◎
+                        </div>
+
+                        <strong>
+                            No credit requests
+                        </strong>
+
+                        <span>
+                            New Payza credit requests will appear here.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+                    
+                    <!-- =========================================================
+                         WITHDRAWAL REQUESTS
+                    ========================================================= -->
+                    
+                    <section id="withdrawalsSection" class="page-section">
+                    
+                        <div class="page-heading">
+                    
+                            <div>
+                    
+                                <span class="heading-label">
+                                    PAYZA OPERATIONS
+                                </span>
+                
+                    
+                                <p>
+                                    Review and manage customer withdrawal requests.
+                                </p>
+                    
+                            </div>
+                    
+                        </div>
+                    
+                    
+                        <!-- =====================================================
+                             WITHDRAWAL TOOLBAR
+                        ====================================================== -->
+                    
+                        <div class="request-toolbar withdrawal-toolbar">
+                    
+                            <div class="withdrawal-heading-count">
+                    
+                                <span class="withdrawal-count-label">
+                                    REQUESTS
+                                </span>
+                    
+                                <strong id="pendingWithdrawalStat">
+                                    0
+                                </strong>
+                    
+                            </div>
+                    
+                    
+                            <div class="filter-group withdrawal-filters">
+                    
+                                <button type="button" class="withdrawal-filter-btn active" data-filter="all">
+                                    All
+                                </button>
+                    
+                                <button type="button" class="withdrawal-filter-btn" data-filter="pending">
+                                    Pending
+                                </button>
+                    
+                                <button type="button" class="withdrawal-filter-btn" data-filter="approved">
+                                    Approved
+                                </button>
+                    
+                                <button type="button" class="withdrawal-filter-btn" data-filter="rejected">
+                                    Rejected
+                                </button>
+                    
+                            </div>
+                    
+                    
+                            <div class="withdrawal-search-box">
+                    
+                                <span>
+                                    ⌕
+                                </span>
+                    
+                                <input type="search" id="withdrawalSearch" placeholder="Search withdrawals..." autocomplete="off">
+                    
+                            </div>
+                    
+                        </div>
+                    
+                    
+                        <!-- =====================================================
+                             WITHDRAWAL REQUEST LIST
+                        ====================================================== -->
+                    
+                        <div id="withdrawalList" class="request-list withdrawal-list">
+                    
+                            <div class="empty-state large">
+                    
+                                <div class="empty-icon">
+                                    ₦
+                                </div>
+                    
+                                <strong>
+                                    No withdrawal requests
+                                </strong>
+                    
+                                <span>
+                                    Customer withdrawal requests will appear here.
+                                </span>
+                    
+                            </div>
+                    
+                        </div>
+                    
+                    </section>
+
+
+            <!-- =================================================
+             APPROVED
+        ================================================== -->
+
+            <section id="approvedSection" class="admin-section">
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <span class="heading-label">
+                            PAYZA OPERATIONS
+                        </span>
+
+                        <h1>
+                            Approved Requests
+                        </h1>
+
+                        <p>
+                            Credit requests that have been successfully approved.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="approvedList" class="request-list">
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon success">
+                            ✓
+                        </div>
+
+                        <strong>
+                            No approved requests
+                        </strong>
+
+                        <span>
+                            Approved requests will appear here.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+             REJECTED
+        ================================================== -->
+
+            <section id="rejectedSection" class="admin-section">
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <span class="heading-label">
+                            PAYZA OPERATIONS
+                        </span>
+
+                        <h1>
+                            Rejected Requests
+                        </h1>
+
+                        <p>
+                            Requests that were declined.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="rejectedList" class="request-list">
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon danger">
+                            ×
+                        </div>
+
+                        <strong>
+                            No rejected requests
+                        </strong>
+
+                        <span>
+                            Rejected requests will appear here.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+             USERS
+        ================================================== -->
+
+            <section id="usersSection" class="admin-section">
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <span class="heading-label">
+                            ACCOUNT MANAGEMENT
+                        </span>
+
+                        <h1>
+                            Payza Accounts
+                        </h1>
+
+                        <p>
+                            Account information and customer balances.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="usersList" class="users-list">
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ◉
+                        </div>
+
+                        <strong>
+                            Account management
+                        </strong>
+
+                        <span>
+                            Payza account information will appear here.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+                        <!-- =========================================================
+                             PAYZA SETTINGS
+                        ========================================================= -->
+                        <section id="settingsSection" class="admin-section settings-section">
+                        
+                            <div class="settings-card">
+                        
+                                <!-- SETTINGS HEADER -->
+                                <div class="settings-card-header">
+                        
+                                    <div class="settings-header-icon">
+                                        ⚙
+                                    </div>
+                        
+                                    <div class="settings-header-content">
+                        
+                                        <h2>
+                                            Currency & Account Settings
+                                        </h2>
+                        
+                                        <p>
+                                            Manage the currency symbol and Account Number
+                                            purchase cost used throughout the Payza app.
+                                        </p>
+                        
+                                    </div>
+                        
+                                </div>
+                        
+                        
+                                <!-- SETTINGS BODY -->
+                                <div class="settings-card-body">
+                        
+                        
+                                    <!-- CURRENCY -->
+                                    <div class="setting-item">
+                        
+                                        <div class="setting-item-info">
+                        
+                                            <div class="setting-item-icon">
+                                                ₵
+                                            </div>
+                        
+                                            <div>
+                        
+                                                <h3>
+                                                    Currency Symbol
+                                                </h3>
+                        
+                                                <p>
+                                                    Set the currency symbol used for
+                                                    external account balances and withdrawals.
+                                                </p>
+                        
+                                            </div>
+                        
+                                        </div>
+                        
+                        
+                                        <div class="setting-item-control">
+                        
+                                            <label for="currencySymbolInput">
+                                                Currency Symbol
+                                            </label>
+                        
+                                            <input type="text" id="currencySymbolInput" class="settings-input" placeholder="₦" maxlength="8"
+                                                autocomplete="off">
+                        
+                                        </div>
+                        
+                                    </div>
+                        
+                        
+                                    <!-- ACCOUNT NUMBER COST -->
+                                    <div class="setting-item">
+                        
+                                        <div class="setting-item-info">
+                        
+                                            <div class="setting-item-icon">
+                                                #
+                                            </div>
+                        
+                                            <div>
+                        
+                                                <h3>
+                                                    Account Number Cost
+                                                </h3>
+                        
+                                                <p>
+                                                    Set the amount users must pay to
+                                                    obtain their Payza Account Number.
+                                                </p>
+                        
+                                            </div>
+                        
+                                        </div>
+                        
+                        
+                                        <div class="setting-item-control">
+                        
+                                            <label for="accountNumberCostInput">
+                                                Account Number Cost
+                                            </label>
+                        
+                                            <input type="number" id="accountNumberCostInput" class="settings-input" placeholder="5000" min="0"
+                                                step="0.01">
+                        
+                                        </div>
+                        
+                                    </div>
+                        
+                        
+                                    <!-- LIVE PREVIEW -->
+                                    <div class="settings-preview">
+                        
+                                        <div class="settings-preview-header">
+                        
+                                            <div>
+                        
+                                                <span class="preview-label">
+                                                    LIVE PREVIEW
+                                                </span>
+                        
+                                                <h3>
+                                                    How your settings will appear
+                                                </h3>
+                        
+                                            </div>
+                        
+                                            <div class="preview-status">
+                                                Preview
+                                            </div>
+                        
+                                        </div>
+                        
+                        
+                                        <div class="settings-preview-grid">
+                        
+                        
+                                            <div class="preview-box">
+                        
+                                                <span>
+                                                    Available Balance
+                                                </span>
+                        
+                                                <strong id="currencyPreviewBalance">
+                                                    ₦206,328.13
+                                                </strong>
+                        
+                                            </div>
+                        
+                        
+                                            <div class="preview-box">
+                        
+                                                <span>
+                                                    Withdrawal
+                                                </span>
+                        
+                                                <strong id="currencyPreviewWithdrawal">
+                                                    ₦206,328.13
+                                                </strong>
+                        
+                                            </div>
+                        
+                        
+                                            <div class="preview-box">
+                        
+                                                <span>
+                                                    Account Number Cost
+                                                </span>
+                        
+                                                <strong id="currencyPreviewAccountCost">
+                                                    ₦5,000.00
+                                                </strong>
+                        
+                                            </div>
+                        
+                        
+                                        </div>
+                        
+                                    </div>
+                        
+                        
+                                    <!-- UPDATE AREA -->
+                                    <div class="settings-save-area">
+                        
+                                        <div id="currencySettingsStatus" class="settings-status"></div>
+                        
+                        
+                                        <button type="button" id="saveCurrencySettingsBtn" class="settings-update-btn">
+                        
+                                            <span class="settings-update-icon">
+                                                ✓
+                                            </span>
+                        
+                                            <span>
+                                                Update Settings
+                                            </span>
+                        
+                                        </button>
+                        
+                                    </div>
+                        
+                                </div>
+                        
+                            </div>
+                        
+                        </section>
+
+            <!-- =================================================
+             ACTIVITY
+        ================================================== -->
+
+            <section id="activitySection" class="admin-section">
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <span class="heading-label">
+                            AUDIT LOG
+                        </span>
+
+                        <h1>
+                            Activity
+                        </h1>
+
+                        <p>
+                            Recent administrative activity.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="fullActivityFeed" class="activity-feed"></div>
+
+            </section>
+
+
+        </main>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     REQUEST DETAIL MODAL
+====================================================== -->
+
+    <div id="requestModal" class="modal hidden">
+
+        <div class="modal-card">
+
+
+            <button class="modal-close" id="closeRequestModal">
+                ×
+            </button>
+
+
+            <div class="modal-heading">
+
+                <div class="modal-icon">
+                    P
+                </div>
+
+                <div>
+
+                    <span>
+                        CREDIT REQUEST
+                    </span>
+
+                    <h2>
+                        Request Details
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div id="requestModalContent" class="request-modal-content"></div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     CONFIRMATION MODAL
+====================================================== -->
+
+    <div id="confirmModal" class="modal hidden">
+
+        <div class="modal-card confirmation-card">
+
+
+            <div id="confirmIcon" class="confirmation-icon">
+                !
+            </div>
+
+
+            <h2 id="confirmTitle">
+                Confirm Action
+            </h2>
+
+
+            <p id="confirmMessage">
+                Are you sure you want to continue?
+            </p>
+
+
+            <div class="confirmation-actions">
+
+                <button id="confirmCancelBtn" class="secondary-btn">
+                    Cancel
+                </button>
+
+                <button id="confirmActionBtn" class="danger-btn">
+                    Confirm
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     TOAST
+====================================================== -->
+
+    <div id="adminToast" class="admin-toast">
+
+        <div class="toast-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <strong id="adminToastTitle">
+                Success
+            </strong>
+
+            <span id="adminToastMessage">
+                Operation completed.
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <script type="module" src="./admin.js"></script>
+
+
+</body>
+
+</html>
