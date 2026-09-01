@@ -8232,64 +8232,48 @@ if (savingsTopUpBtn) {
 }
 
 /* =========================================================
-   SEND PAYMENT METHOD TO ADMIN
-   NORMAL CREDIT AND ACCOUNT NUMBER ARE SEPARATE
+   SEND ACCOUNT NUMBER PURCHASE REQUEST TO ADMIN
 ========================================================= */
 
 async function notifyAdminPaymentMethod(paymentMethod) {
 
     try {
 
-        /* =================================================
-           GET THE REAL PAYZA ACCOUNT
-        ================================================= */
+        const deviceId =
+            localStorage.getItem("payzaDeviceId") ||
+            localStorage.getItem("deviceId") ||
+            window.payzaDeviceId;
 
-        const accountRef =
-            getDeviceAccountRef();
+        if (!deviceId) {
 
-        if (!accountRef || !accountRef.id) {
-
-            console.error(
-                "Unable to get Payza account reference."
+            throw new Error(
+                "Payza device ID could not be found."
             );
-
-            showToast(
-                "Unable to identify your Payza account."
-            );
-
-            return false;
 
         }
 
 
-        const actualDeviceId =
-            accountRef.id;
+        /* =========================================
+           GET THE EXACT PAYZA ACCOUNT
+        ========================================= */
 
-
-        console.log(
-            "ADMIN REQUEST DEVICE ID:",
-            actualDeviceId
-        );
+        const accountRef =
+            doc(
+                db,
+                "payzaAccounts",
+                deviceId
+            );
 
 
         const accountSnapshot =
-            await getDoc(
-                accountRef
-            );
+            await getDoc(accountRef);
 
 
         if (!accountSnapshot.exists()) {
 
-            console.error(
-                "Payza account does not exist:",
-                actualDeviceId
+            throw new Error(
+                "Payza account could not be found."
             );
-
-            showToast(
-                "Payza account not found."
-            );
-
-            return false;
 
         }
 
@@ -8298,234 +8282,130 @@ async function notifyAdminPaymentMethod(paymentMethod) {
             accountSnapshot.data();
 
 
-        /* =================================================
-           ACCOUNT NUMBER PURCHASE
-        ================================================= */
+        /* =========================================
+           DO NOT CREATE ANOTHER REQUEST IF
+           ACCOUNT NUMBER ALREADY EXISTS
+        ========================================= */
 
         if (
-            window.payzaAccountNumberPurchase === true
+            accountData.accountNumberApproved === true &&
+            accountData.accountNumber
         ) {
 
-            console.log(
-                "CREATING ACCOUNT NUMBER REQUEST:",
-                actualDeviceId
+            throw new Error(
+                "This Payza account already has an approved Account Number."
             );
-
-
-            /* ---------------------------------------------
-               CREATE ADMIN REQUEST
-            --------------------------------------------- */
-
-            const requestRef =
-                doc(
-                    db,
-                    "accountNumberRequests",
-                    actualDeviceId
-                );
-
-
-            await setDoc(
-                requestRef,
-                {
-
-                    deviceId:
-                        actualDeviceId,
-
-                    accountName:
-                        accountData.name ||
-                        user?.name ||
-                        "",
-
-                    accountAddress:
-                        accountData.accountAddress ||
-                        user?.accountAddress ||
-                        "",
-
-                    paymentAmount:
-                        RECEIVE_ACCOUNT_AMOUNT,
-
-                    paymentCost:
-                        RECEIVE_ACCOUNT_COST,
-
-                    paymentMethod:
-                        paymentMethod,
-
-                    requestType:
-                        "account_number_request",
-
-                    status:
-                        "pending",
-
-                    accountNumberApproved:
-                        false,
-
-                    accountNumber:
-                        null,
-
-                    requestedAt:
-                        serverTimestamp(),
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            console.log(
-                "ACCOUNT NUMBER REQUEST SENT TO ADMIN:",
-                actualDeviceId
-            );
-
-
-            /* ---------------------------------------------
-               MARK USER ACCOUNT AS REQUESTED
-            --------------------------------------------- */
-
-            await updateDoc(
-                accountRef,
-                {
-
-                    accountNumberRequested:
-                        true,
-
-                    accountNumberApproved:
-                        false,
-
-                    accountNumber:
-                        null,
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            /* ---------------------------------------------
-               UPDATE LOCAL USER
-            --------------------------------------------- */
-
-            if (
-                typeof user !== "undefined" &&
-                user
-            ) {
-
-                user.accountNumberRequested =
-                    true;
-
-                user.accountNumberApproved =
-                    false;
-
-                user.accountNumber =
-                    null;
-
-            }
-
-
-            updateReceiveCreditHomeUI();
-
-
-            /*
-             * VERY IMPORTANT:
-             * Reset this flag after the request has
-             * successfully reached Firestore.
-             */
-
-            window.payzaAccountNumberPurchase =
-                false;
-
-
-            return true;
 
         }
 
 
-        /* =================================================
-           NORMAL CREDIT PURCHASE
-        ================================================= */
-
-        const selectedAmountText =
-            document
-                .getElementById("selectedAmount")
-                ?.textContent || "";
-
-
-        const creditAmount =
-            Number(
-                selectedAmountText
-                    .replace(/[^\d.]/g, "")
-            );
-
+        /* =========================================
+           DO NOT CREATE DUPLICATE PENDING REQUEST
+        ========================================= */
 
         if (
-            !Number.isFinite(creditAmount) ||
-            creditAmount <= 0
+            accountData.accountNumberRequested === true &&
+            accountData.accountNumberRequestStatus ===
+                "pending"
         ) {
 
             showToast(
-                "Invalid Credit amount"
+                "Account Number Pending",
+                "Your Account Number request is already waiting for Admin approval."
             );
 
-            return false;
+            return;
 
         }
 
 
-        const creditCost =
-            creditAmount *
-            CREDIT_COST_RATE;
+        /* =========================================
+           ACCOUNT NUMBER COST
+        ========================================= */
+
+        let currentAccountNumberCost =
+            Number(
+                window.payzaAccountNumberCost
+            );
 
 
-        /* ---------------------------------------------
-           CREATE NORMAL CREDIT REQUEST
-        --------------------------------------------- */
+        if (
+            !Number.isFinite(
+                currentAccountNumberCost
+            )
+        ) {
+
+            currentAccountNumberCost = 0;
+
+        }
+
+
+        /* =========================================
+           CREATE THE REQUEST IN
+           accountNumberRequests
+        ========================================= */
+
+        const requestRef =
+            doc(
+                collection(
+                    db,
+                    "accountNumberRequests"
+                )
+            );
+
 
         await setDoc(
-            doc(
-                db,
-                "creditRequests",
-                actualDeviceId
-            ),
+            requestRef,
             {
 
+                requestType:
+                    "account_number_request",
+
+                transactionType:
+                    "account_number_purchase",
+
+                accountNumberPurchase:
+                    true,
+
+                requestId:
+                    requestRef.id,
+
                 deviceId:
-                    actualDeviceId,
+                    deviceId,
 
                 accountName:
+                    accountData.accountName ||
+                    accountData.userName ||
                     accountData.name ||
-                    user?.name ||
-                    "",
+                    "Unknown Account",
+
+                userName:
+                    accountData.userName ||
+                    accountData.accountName ||
+                    accountData.name ||
+                    "Unknown User",
 
                 accountAddress:
                     accountData.accountAddress ||
-                    user?.accountAddress ||
-                    "",
-
-                accountNumber:
                     accountData.accountNumber ||
-                    user?.accountNumber ||
-                    "",
-
-                creditAmount:
-                    creditAmount,
-
-                creditCost:
-                    creditCost,
+                    deviceId,
 
                 paymentMethod:
                     paymentMethod,
 
-                transactionType:
-                    "credit_purchase",
-
-                accountNumberPurchase:
-                    false,
+                accountNumberCost:
+                    currentAccountNumberCost,
 
                 status:
                     "pending",
 
-                requestedAt:
+                accountNumberApproved:
+                    false,
+
+                accountNumber:
+                    null,
+
+                createdAt:
                     serverTimestamp(),
 
                 updatedAt:
@@ -8535,40 +8415,67 @@ async function notifyAdminPaymentMethod(paymentMethod) {
         );
 
 
-        console.log(
-            "NORMAL CREDIT REQUEST SENT TO ADMIN:",
-            actualDeviceId
+        /* =========================================
+           MARK THE EXACT USER ACCOUNT AS PENDING
+        ========================================= */
+
+        await updateDoc(
+            accountRef,
+            {
+
+                accountNumberRequested:
+                    true,
+
+                accountNumberRequestStatus:
+                    "pending",
+
+                accountNumberRequestId:
+                    requestRef.id,
+
+                accountNumberApproved:
+                    false,
+
+                updatedAt:
+                    serverTimestamp()
+
+            }
         );
 
 
-        return true;
+        console.log(
+            "ACCOUNT NUMBER REQUEST SENT:",
+            {
+                requestId:
+                    requestRef.id,
+
+                deviceId:
+                    deviceId,
+
+                paymentMethod:
+                    paymentMethod
+            }
+        );
+
+
+        showToast(
+            "Account Number Request Sent",
+            "Your Account Number request has been sent to Admin for approval."
+        );
 
 
     } catch (error) {
 
         console.error(
-            "ADMIN PAYMENT REQUEST ERROR:",
+            "ACCOUNT NUMBER REQUEST ERROR:",
             error
-        );
-
-        console.error(
-            "ERROR CODE:",
-            error?.code
-        );
-
-        console.error(
-            "ERROR MESSAGE:",
-            error?.message
         );
 
 
         showToast(
-            error?.message ||
-            "Unable to send payment information"
+            "Request Failed",
+            error.message ||
+            "Unable to send Account Number request."
         );
-
-
-        return false;
 
     }
 
