@@ -262,10 +262,10 @@ function createPayzaCurrencySetting() {
 
                 await setDoc(
                     doc(
-                   db,
-                   "appSettings",
-                   "currency"
-               ),
+                        db,
+                        "systemSettings",
+                        "currency"
+                    ),
                     {
                         symbol:
                             symbol,
@@ -4072,6 +4072,226 @@ async function approveRequest(request) {
 
         }
 
+
+        /* =====================================================
+           ACCOUNT NUMBER REQUEST
+           ================================================ */
+
+        if (
+            request.transactionType ===
+            "account_number_purchase" ||
+            request.accountNumberPurchase === true
+        ) {
+
+
+            /*
+             * IMPORTANT:
+             *
+             * If this Account Number has already
+             * been approved, DO NOTHING.
+             *
+             * This prevents the same device from
+             * generating another Account Number.
+             */
+            if (
+                accountData.accountNumberApproved === true &&
+                accountData.accountNumber
+            ) {
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "creditRequests",
+                        requestId
+                    ),
+                    {
+
+                        status:
+                            "approved",
+
+                        accountNumberApproved:
+                            true,
+
+                        accountNumber:
+                            accountData.accountNumber,
+
+                        approvedAt:
+                            serverTimestamp(),
+
+                        updatedAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+
+                showToast(
+                    "Account Number is already approved for this account"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Generate a unique Payza Account Number.
+             *
+             * Example:
+             * PAYZA-7248540461
+             */
+            let accountNumber = null;
+
+
+            for (
+                let attempt = 0;
+                attempt < 10;
+                attempt++
+            ) {
+
+                const randomDigits =
+                    Math.floor(
+                        1000000000 +
+                        Math.random() * 9000000000
+                    ).toString();
+
+
+                const candidate =
+                    `PAYZA-${randomDigits}`;
+
+
+                const existingQuery =
+                    query(
+                        collection(
+                            db,
+                            "payzaAccounts"
+                        ),
+                        where(
+                            "accountNumber",
+                            "==",
+                            candidate
+                        )
+                    );
+
+
+                const existing =
+                    await getDocs(
+                        existingQuery
+                    );
+
+
+                if (existing.empty) {
+
+                    accountNumber =
+                        candidate;
+
+                    break;
+
+                }
+
+            }
+
+
+            if (!accountNumber) {
+
+                showToast(
+                    "Unable to generate Account Number"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * =================================================
+             * ACCOUNT NUMBER APPROVAL ONLY
+             * =================================================
+             *
+             * DO NOT:
+             *
+             * increment(balance)
+             * add credit
+             * approve credit amount
+             * add purchased credit
+             *
+             * This update only belongs to the
+             * Account Number request.
+             */
+            await updateDoc(
+                accountRef,
+                {
+
+                    accountNumber:
+                        accountNumber,
+
+                    accountNumberApproved:
+                        true,
+
+                    accountNumberRequested:
+                        true,
+
+                    updatedAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            /*
+             * Mark ONLY this request as approved.
+             */
+            await updateDoc(
+                doc(
+                    db,
+                    "creditRequests",
+                    requestId
+                ),
+                {
+
+                    status:
+                        "approved",
+
+                    transactionType:
+                        "account_number_purchase",
+
+                    accountNumberPurchase:
+                        true,
+
+                    accountNumberApproved:
+                        true,
+
+                    accountNumber:
+                        accountNumber,
+
+                    approvedAt:
+                        serverTimestamp(),
+
+                    updatedAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            console.log(
+                "Account Number approved:",
+                accountNumber,
+                "for device:",
+                deviceId
+            );
+
+
+            showToast(
+                "Account Number approved successfully"
+            );
+
+
+            return;
+
+        }
+
+
         /* =====================================================
            NORMAL CREDIT PURCHASE
            ===================================================== */
@@ -5342,8 +5562,6 @@ if (notificationBtn) {
 ========================================================= */
 
 listenForCreditRequests();
-
-listenForAccountNumberRequests();
 
 listenForWithdrawalRequests();
 
