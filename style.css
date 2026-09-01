@@ -7132,83 +7132,139 @@ button {
 }
 
 /* =========================================================
-   CUSTOM SAVINGS AMOUNT
+   CUSTOM SAVINGS MOBILE INPUT
 ========================================================= */
 
 .custom-savings-section {
     margin-top: 18px;
     padding: 16px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 18px;
+    background: #f7f7f8;
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .custom-savings-label {
-    font-size: 13px;
+    display: block;
+    margin-bottom: 10px;
+
+    font-size: 12px;
+    line-height: 1.45;
     font-weight: 600;
-    color: #64748b;
-    line-height: 1.5;
-    margin-bottom: 11px;
+    color: #555;
 }
 
 .custom-savings-input-row {
     display: flex;
+    align-items: stretch;
     gap: 9px;
-    align-items: center;
+    width: 100%;
 }
 
 #customSavingsAmount {
     flex: 1;
     min-width: 0;
-    height: 46px;
-    padding: 0 13px;
-    border: 1px solid #dbe2ea;
-    border-radius: 12px;
+
+    height: 48px;
+    padding: 0 14px;
+
+    border: 1px solid #d9d9dc;
+    border-radius: 13px;
+
     background: #fff;
-    color: #111827;
+
+    color: #111;
+    font-family: inherit;
     font-size: 15px;
     font-weight: 600;
-    outline: none;
-    box-sizing: border-box;
-}
 
-#customSavingsAmount:focus {
-    border-color: #111827;
+    outline: none;
+
+    -webkit-appearance: none;
+    appearance: none;
+
+    box-sizing: border-box;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 #customSavingsAmount::placeholder {
-    color: #94a3b8;
-    font-weight: 500;
+    color: #999;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+#customSavingsAmount:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
 }
 
 #submitCustomSavingsBtn {
-    height: 46px;
-    padding: 0 18px;
+    height: 48px;
+    padding: 0 17px;
+
     border: none;
-    border-radius: 12px;
-    background: #111827;
-    color: white;
-    font-size: 14px;
+    border-radius: 13px;
+
+    background: #111;
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 13px;
     font-weight: 700;
-    cursor: pointer;
+
     white-space: nowrap;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
 }
 
 #submitCustomSavingsBtn:active {
-    transform: scale(0.97);
+    transform: scale(0.96);
+    opacity: 0.9;
 }
 
-#submitCustomSavingsBtn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+
+/* =========================================================
+   SMALL MOBILE SCREENS
+========================================================= */
 
 @media (max-width: 420px) {
 
+    .custom-savings-section {
+        padding: 14px;
+    }
+
+    .custom-savings-input-row {
+        gap: 8px;
+    }
+
+    #customSavingsAmount {
+        height: 50px;
+        padding: 0 13px;
+        font-size: 15px;
+    }
+
+    #submitCustomSavingsBtn {
+        height: 50px;
+        padding: 0 14px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 350px) {
+
     .custom-savings-input-row {
         flex-direction: column;
-        align-items: stretch;
     }
 
     #customSavingsAmount,
