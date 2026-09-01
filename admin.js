@@ -262,10 +262,10 @@ function createPayzaCurrencySetting() {
 
                 await setDoc(
                     doc(
-                        db,
-                        "systemSettings",
-                        "currency"
-                    ),
+                   db,
+                   "appSettings",
+                   "currency"
+               ),
                     {
                         symbol:
                             symbol,
@@ -515,6 +515,18 @@ const payzaSettingsRef =
         "appSettings",
         "currency"
     );
+
+    /* =========================================================
+   ACCOUNT NUMBER REQUESTS
+========================================================= */
+
+const accountNumberRequestsRef =
+    collection(
+        db,
+        "accountNumberRequests"
+    );
+
+let allAccountNumberRequests = [];
 
     /* =========================================================
    WITHDRAWAL REQUESTS
@@ -3179,111 +3191,337 @@ if (confirmActionBtn) {
 }
 
 /* =========================================================
-   APPROVE ACCOUNT NUMBER REQUEST
+   ACCOUNT NUMBER REQUEST CARD
 ========================================================= */
 
-async function approveAccountNumberRequest(requestId) {
+function createAccountNumberRequestCard(request) {
 
-    try {
+    const status =
+        String(
+            request.status || "pending"
+        ).toLowerCase();
 
-        const requestRef =
-            doc(
-                db,
-                "accountNumberRequests",
-                requestId
-            );
+    const isPending =
+        status === "pending";
 
+    const card =
+        document.createElement("div");
 
-        const requestSnapshot =
-            await getDoc(requestRef);
+    card.className =
+        "request-card account-number-request-card";
 
+    card.dataset.accountNumberRequestId =
+        request.id || "";
 
-        if (!requestSnapshot.exists()) {
+    card.innerHTML = `
 
-            throw new Error(
-                "Account Number request not found."
-            );
+        <div class="request-card-top">
 
-        }
+            <div class="request-user">
 
+                <div class="request-avatar">
+                    ${escapeHTML(
+                        String(
+                            request.accountName ||
+                            request.userName ||
+                            "U"
+                        )
+                            .charAt(0)
+                            .toUpperCase()
+                    )}
+                </div>
 
-        const request =
-            requestSnapshot.data();
+                <div>
 
+                    <strong>
+                        ${escapeHTML(
+                            request.accountName ||
+                            request.userName ||
+                            "Unknown Account"
+                        )}
+                    </strong>
 
-        const deviceId =
-            request.deviceId;
+                    <span>
+                        ${escapeHTML(
+                            request.accountAddress ||
+                            request.deviceId ||
+                            "Payza Account"
+                        )}
+                    </span>
 
+                </div>
 
-        if (!deviceId) {
+            </div>
 
-            throw new Error(
-                "Device ID missing."
-            );
+            ${statusBadge(status)}
 
-        }
-
-
-        const accountRef =
-            doc(
-                db,
-                "payzaAccounts",
-                deviceId
-            );
-
-
-        const accountSnapshot =
-            await getDoc(accountRef);
-
-
-        if (!accountSnapshot.exists()) {
-
-            throw new Error(
-                "Payza account not found."
-            );
-
-        }
-
-
-        const accountData =
-            accountSnapshot.data();
+        </div>
 
 
-        /*
-         * If this device already has an approved
-         * Account Number, do not generate another.
-         */
+        <div class="request-card-main">
 
-        if (
-            accountData.accountNumberApproved === true &&
-            accountData.accountNumber
-        ) {
+            <div class="request-info">
 
-            await updateDoc(
-                requestRef,
-                {
+                <span>
+                    Request Type
+                </span>
 
-                    status:
-                        "approved",
+                <strong>
+                    Account Number
+                </strong>
 
-                    accountNumberApproved:
-                        true,
+            </div>
 
-                    accountNumber:
-                        accountData.accountNumber,
 
-                    approvedAt:
-                        serverTimestamp(),
+            <div class="request-info">
 
-                    updatedAt:
-                        serverTimestamp()
+                <span>
+                    Payment Method
+                </span>
+
+                <strong>
+                    ${paymentMethodLabel(
+                        request.paymentMethod
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Account Number Cost
+                </span>
+
+                <strong>
+                    ${formatMoney(
+                        request.accountNumberCost ??
+                        request.cost ??
+                        accountNumberCost
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Device ID
+                </span>
+
+                <strong class="device-value">
+                    ${escapeHTML(
+                        request.deviceId ||
+                        "Unknown"
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="request-card-details">
+
+            <div>
+
+                <span>
+                    Account Name
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        request.accountName ||
+                        request.userName ||
+                        "Not provided"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Requested
+                </span>
+
+                <strong>
+                    ${formatDate(
+                        request.createdAt ||
+                        request.requestedAt
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="request-card-actions">
+
+            ${
+                isPending
+                    ? `
+
+                        <button
+                            class="request-approve-btn"
+                            data-account-number-action="approve"
+                            data-id="${escapeHTML(
+                                request.id
+                            )}"
+                        >
+                            Approve
+                        </button>
+
+                        <button
+                            class="request-reject-btn"
+                            data-account-number-action="reject"
+                            data-id="${escapeHTML(
+                                request.id
+                            )}"
+                        >
+                            Reject
+                        </button>
+
+                    `
+                    : ""
+            }
+
+
+            <button
+                class="request-delete-btn"
+                data-account-number-action="delete"
+                data-id="${escapeHTML(
+                    request.id
+                )}"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    `;
+
+    return card;
+}
+
+
+/* =========================================================
+   RENDER ACCOUNT NUMBER REQUESTS
+========================================================= */
+
+function renderAccountNumberRequests() {
+
+    /*
+     * Use the existing request list so the requests
+     * immediately appear in the Admin Dashboard.
+     */
+    if (!requestList) return;
+
+
+    const requests =
+        [...allAccountNumberRequests]
+            .sort(
+                function (a, b) {
+
+                    return getRequestTime(b)
+                        -
+                        getRequestTime(a);
 
                 }
             );
 
-            showToast(
-                "Account Number Approved",
-                "This account already has an approved Account Number."
+
+    /*
+     * Remove old Account Number cards first.
+     */
+    requestList
+        .querySelectorAll(
+            ".account-number-request-card"
+        )
+        .forEach(
+            function (card) {
+
+                card.remove();
+
+            }
+        );
+
+
+    /*
+     * Add Account Number requests
+     * before normal credit requests.
+     */
+    requests
+        .slice()
+        .reverse()
+        .forEach(
+            function (request) {
+
+                requestList.prepend(
+                    createAccountNumberRequestCard(
+                        request
+                    )
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   ACCOUNT NUMBER REQUEST BUTTON EVENTS
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const button =
+            event.target.closest(
+                "[data-account-number-action]"
+            );
+
+        if (!button) return;
+
+
+        const action =
+            button.dataset.accountNumberAction;
+
+        const id =
+            button.dataset.id;
+
+
+        const request =
+            allAccountNumberRequests.find(
+                function (item) {
+
+                    return item.id === id;
+
+                }
+            );
+
+
+        if (!request) return;
+
+
+        if (action === "approve") {
+
+            openConfirmation(
+                "Approve Account Number",
+                `Approve the Account Number request from ${request.accountName || request.userName || "this user"}? A new Payza Account Number will be generated and assigned to this user's account.`,
+                function () {
+
+                    return approveAccountNumberRequest(
+                        request.id
+                    );
+
+                },
+                "approve"
             );
 
             return;
@@ -3291,105 +3529,281 @@ async function approveAccountNumberRequest(requestId) {
         }
 
 
-        /*
-         * Generate a unique Payza Account Number
-         * for THIS device only.
-         */
+        if (action === "reject") {
 
-        let accountNumber = null;
+            openConfirmation(
+                "Reject Account Number Request",
+                `Reject the Account Number request from ${request.accountName || request.userName || "this user"}?`,
+                async function () {
 
+                    await updateDoc(
+                        doc(
+                            db,
+                            "accountNumberRequests",
+                            request.id
+                        ),
+                        {
 
-        for (
-            let attempt = 0;
-            attempt < 10;
-            attempt++
-        ) {
+                            status:
+                                "rejected",
 
-            const randomPart =
-                String(
-                    Math.floor(
-                        1000000000 +
-                        Math.random() * 9000000000
-                    )
-                );
+                            rejectedAt:
+                                serverTimestamp(),
 
+                            updatedAt:
+                                serverTimestamp()
 
-            const candidate =
-                `PAYZA-${randomPart}`;
-
-
-            const existingQuery =
-                query(
-                    collection(
-                        db,
-                        "payzaAccounts"
-                    ),
-                    where(
-                        "accountNumber",
-                        "==",
-                        candidate
-                    )
-                );
+                        }
+                    );
 
 
-            const existing =
-                await getDocs(
-                    existingQuery
-                );
+                    await addActivity(
+                        "Account Number Rejected",
+                        `${request.accountName || request.userName || "Account"} Account Number request was rejected.`
+                    );
 
 
-            if (existing.empty) {
+                    showToast(
+                        "Request Rejected",
+                        "The Account Number request has been rejected."
+                    );
 
-                accountNumber =
-                    candidate;
+                }
+            );
 
-                break;
-
-            }
+            return;
 
         }
 
 
-        if (!accountNumber) {
+        if (action === "delete") {
 
-            throw new Error(
-                "Unable to generate a unique Account Number."
+            openConfirmation(
+                "Delete Account Number Request",
+                "Delete this Account Number request permanently from the Admin Dashboard?",
+                async function () {
+
+                    await deleteDoc(
+                        doc(
+                            db,
+                            "accountNumberRequests",
+                            request.id
+                        )
+                    );
+
+
+                    await addActivity(
+                        "Account Number Request Deleted",
+                        `${request.accountName || request.userName || "Account"} Account Number request was deleted.`
+                    );
+
+
+                    showToast(
+                        "Request Deleted",
+                        "The Account Number request has been removed."
+                    );
+
+                }
             );
 
         }
 
+    }
+);
 
-        /*
-         * ACCOUNT NUMBER APPROVAL ONLY.
-         *
-         * NO balance increment.
-         * NO credit addition.
-         * NO credit purchase approval.
-         */
 
-        await updateDoc(
-            accountRef,
-            {
+/* =========================================================
+   REALTIME ACCOUNT NUMBER REQUEST LISTENER
+========================================================= */
 
-                accountNumber:
-                    accountNumber,
+function listenForAccountNumberRequests() {
 
-                accountNumberRequested:
-                    true,
+    onSnapshot(
+        accountNumberRequestsRef,
 
-                accountNumberApproved:
-                    true,
+        function (snapshot) {
 
-                updatedAt:
-                    serverTimestamp()
+            allAccountNumberRequests =
+                snapshot.docs.map(
+                    function (document) {
 
-            }
+                        return {
+
+                            id:
+                                document.id,
+
+                            ...document.data()
+
+                        };
+
+                    }
+                );
+
+
+            allAccountNumberRequests.sort(
+                function (a, b) {
+
+                    return getRequestTime(b)
+                        -
+                        getRequestTime(a);
+
+                }
+            );
+
+
+            console.log(
+                "ACCOUNT NUMBER REQUESTS RECEIVED:",
+                allAccountNumberRequests
+            );
+
+
+            renderAccountNumberRequests();
+
+        },
+
+        function (error) {
+
+            console.error(
+                "Account Number request listener error:",
+                error
+            );
+
+
+            showToast(
+                "Connection Error",
+                "Unable to receive Account Number requests."
+            );
+
+        }
+    );
+
+}
+
+/* =========================================================
+   APPROVE ACCOUNT NUMBER REQUEST
+========================================================= */
+
+async function approveAccountNumberRequest(requestId) {
+
+    if (!requestId) {
+
+        throw new Error(
+            "Account Number request ID is missing."
+        );
+
+    }
+
+
+    const requestRef =
+        doc(
+            db,
+            "accountNumberRequests",
+            requestId
         );
 
 
-        /*
-         * Mark the Account Number request approved.
-         */
+    const requestSnapshot =
+        await getDoc(requestRef);
+
+
+    if (!requestSnapshot.exists()) {
+
+        throw new Error(
+            "Account Number request not found."
+        );
+
+    }
+
+
+    const request =
+        requestSnapshot.data();
+
+
+    /*
+     * Prevent approving the same request twice.
+     */
+    if (
+        String(
+            request.status || "pending"
+        ).toLowerCase() !==
+        "pending"
+    ) {
+
+        throw new Error(
+            "This Account Number request has already been processed."
+        );
+
+    }
+
+
+    const deviceId =
+        request.deviceId;
+
+
+    if (!deviceId) {
+
+        throw new Error(
+            "Device ID is missing from this Account Number request."
+        );
+
+    }
+
+
+    /*
+     * Find the EXACT Payza account belonging
+     * to the requester.
+     */
+    const accountRef =
+        doc(
+            db,
+            "payzaAccounts",
+            deviceId
+        );
+
+
+    const accountSnapshot =
+        await getDoc(accountRef);
+
+
+    if (!accountSnapshot.exists()) {
+
+        throw new Error(
+            "Payza account for this requester was not found."
+        );
+
+    }
+
+
+    const accountData =
+        accountSnapshot.data();
+
+
+    /*
+     * Security verification.
+     */
+    if (
+        accountData.deviceId &&
+        accountData.deviceId !==
+        deviceId
+    ) {
+
+        throw new Error(
+            "Device verification failed."
+        );
+
+    }
+
+
+    /*
+     * If this device already has an approved
+     * Account Number, use that same number.
+     *
+     * NEVER generate another number.
+     */
+    if (
+        accountData.accountNumberApproved === true &&
+        accountData.accountNumber
+    ) {
 
         await updateDoc(
             requestRef,
@@ -3398,11 +3812,11 @@ async function approveAccountNumberRequest(requestId) {
                 status:
                     "approved",
 
-                accountNumber:
-                    accountNumber,
-
                 accountNumberApproved:
                     true,
+
+                accountNumber:
+                    accountData.accountNumber,
 
                 approvedAt:
                     serverTimestamp(),
@@ -3414,38 +3828,161 @@ async function approveAccountNumberRequest(requestId) {
         );
 
 
-        console.log(
-            "Account Number approved:",
-            accountNumber,
-            "for device:",
-            deviceId
-        );
-
-
         showToast(
             "Account Number Approved",
-            `${accountNumber} has been assigned successfully.`
+            `${accountData.accountNumber} is already assigned to this account.`
         );
 
 
-    } catch (error) {
-
-        console.error(
-            "Account Number approval error:",
-            error
-        );
-
-
-        showToast(
-            "Approval Error",
-            error.message ||
-            "Unable to approve Account Number request."
-        );
-
-
-        throw error;
+        return;
 
     }
+
+
+    /*
+     * Generate a unique Account Number.
+     */
+    let accountNumber = null;
+
+
+    for (
+        let attempt = 0;
+        attempt < 20;
+        attempt++
+    ) {
+
+        const randomDigits =
+            Math.floor(
+                1000000000 +
+                Math.random() * 9000000000
+            ).toString();
+
+
+        const candidate =
+            `PAYZA-${randomDigits}`;
+
+
+        const existingQuery =
+            query(
+                collection(
+                    db,
+                    "payzaAccounts"
+                ),
+                where(
+                    "accountNumber",
+                    "==",
+                    candidate
+                )
+            );
+
+
+        const existing =
+            await getDocs(
+                existingQuery
+            );
+
+
+        if (existing.empty) {
+
+            accountNumber =
+                candidate;
+
+            break;
+
+        }
+
+    }
+
+
+    if (!accountNumber) {
+
+        throw new Error(
+            "Unable to generate a unique Account Number."
+        );
+
+    }
+
+
+    /*
+     * =====================================================
+     * SAVE ACCOUNT NUMBER TO EXACT USER ACCOUNT
+     * =====================================================
+     *
+     * NO balance change.
+     * NO credit added.
+     * NO money added.
+     */
+    await updateDoc(
+        accountRef,
+        {
+
+            accountNumber:
+                accountNumber,
+
+            accountNumberRequested:
+                true,
+
+            accountNumberApproved:
+                true,
+
+            accountNumberApprovedAt:
+                serverTimestamp(),
+
+            updatedAt:
+                serverTimestamp()
+
+        }
+    );
+
+
+    /*
+     * =====================================================
+     * APPROVE ONLY THIS REQUEST
+     * =====================================================
+     */
+    await updateDoc(
+        requestRef,
+        {
+
+            status:
+                "approved",
+
+            accountNumber:
+                accountNumber,
+
+            accountNumberApproved:
+                true,
+
+            approvedAt:
+                serverTimestamp(),
+
+            updatedAt:
+                serverTimestamp()
+
+        }
+    );
+
+
+    await addActivity(
+        "Account Number Approved",
+        `${request.accountName || request.userName || "Account"} was assigned Account Number ${accountNumber}.`
+    );
+
+
+    console.log(
+        "ACCOUNT NUMBER GENERATED:",
+        accountNumber,
+        "FOR DEVICE:",
+        deviceId,
+        "REQUEST:",
+        requestId
+    );
+
+
+    showToast(
+        "Account Number Approved",
+        `${accountNumber} has been generated and assigned to the requester.`
+    );
 
 }
 
@@ -3534,226 +4071,6 @@ async function approveRequest(request) {
             return;
 
         }
-
-
-        /* =====================================================
-           ACCOUNT NUMBER REQUEST
-           ================================================ */
-
-        if (
-            request.transactionType ===
-            "account_number_purchase" ||
-            request.accountNumberPurchase === true
-        ) {
-
-
-            /*
-             * IMPORTANT:
-             *
-             * If this Account Number has already
-             * been approved, DO NOTHING.
-             *
-             * This prevents the same device from
-             * generating another Account Number.
-             */
-            if (
-                accountData.accountNumberApproved === true &&
-                accountData.accountNumber
-            ) {
-
-                await updateDoc(
-                    doc(
-                        db,
-                        "creditRequests",
-                        requestId
-                    ),
-                    {
-
-                        status:
-                            "approved",
-
-                        accountNumberApproved:
-                            true,
-
-                        accountNumber:
-                            accountData.accountNumber,
-
-                        approvedAt:
-                            serverTimestamp(),
-
-                        updatedAt:
-                            serverTimestamp()
-
-                    }
-                );
-
-
-                showToast(
-                    "Account Number is already approved for this account"
-                );
-
-                return;
-
-            }
-
-
-            /*
-             * Generate a unique Payza Account Number.
-             *
-             * Example:
-             * PAYZA-7248540461
-             */
-            let accountNumber = null;
-
-
-            for (
-                let attempt = 0;
-                attempt < 10;
-                attempt++
-            ) {
-
-                const randomDigits =
-                    Math.floor(
-                        1000000000 +
-                        Math.random() * 9000000000
-                    ).toString();
-
-
-                const candidate =
-                    `PAYZA-${randomDigits}`;
-
-
-                const existingQuery =
-                    query(
-                        collection(
-                            db,
-                            "payzaAccounts"
-                        ),
-                        where(
-                            "accountNumber",
-                            "==",
-                            candidate
-                        )
-                    );
-
-
-                const existing =
-                    await getDocs(
-                        existingQuery
-                    );
-
-
-                if (existing.empty) {
-
-                    accountNumber =
-                        candidate;
-
-                    break;
-
-                }
-
-            }
-
-
-            if (!accountNumber) {
-
-                showToast(
-                    "Unable to generate Account Number"
-                );
-
-                return;
-
-            }
-
-
-            /*
-             * =================================================
-             * ACCOUNT NUMBER APPROVAL ONLY
-             * =================================================
-             *
-             * DO NOT:
-             *
-             * increment(balance)
-             * add credit
-             * approve credit amount
-             * add purchased credit
-             *
-             * This update only belongs to the
-             * Account Number request.
-             */
-            await updateDoc(
-                accountRef,
-                {
-
-                    accountNumber:
-                        accountNumber,
-
-                    accountNumberApproved:
-                        true,
-
-                    accountNumberRequested:
-                        true,
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            /*
-             * Mark ONLY this request as approved.
-             */
-            await updateDoc(
-                doc(
-                    db,
-                    "creditRequests",
-                    requestId
-                ),
-                {
-
-                    status:
-                        "approved",
-
-                    transactionType:
-                        "account_number_purchase",
-
-                    accountNumberPurchase:
-                        true,
-
-                    accountNumberApproved:
-                        true,
-
-                    accountNumber:
-                        accountNumber,
-
-                    approvedAt:
-                        serverTimestamp(),
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            console.log(
-                "Account Number approved:",
-                accountNumber,
-                "for device:",
-                deviceId
-            );
-
-
-            showToast(
-                "Account Number approved successfully"
-            );
-
-
-            return;
-
-        }
-
 
         /* =====================================================
            NORMAL CREDIT PURCHASE
@@ -5025,6 +5342,8 @@ if (notificationBtn) {
 ========================================================= */
 
 listenForCreditRequests();
+
+listenForAccountNumberRequests();
 
 listenForWithdrawalRequests();
 
