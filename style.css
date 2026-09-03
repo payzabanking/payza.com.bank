@@ -92,6 +92,77 @@ button {
     color: white;
 }
 
+/* =========================================================
+   GLOBAL CLICK / TAP / TEXT HIGHLIGHT FIX
+========================================================= */
+
+html,
+body,
+body * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+
+/* Keep form fields usable */
+input,
+textarea,
+select {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* Prevent image dragging/highlighting */
+img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+
+/* Remove focus/active visual flash from clickable elements */
+button,
+a,
+[role="button"],
+[onclick] {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+
+/* Prevent text selection while clicking/tapping */
+button,
+a,
+[role="button"],
+[onclick],
+.card,
+.modal,
+.menu,
+.nav-item {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+
+/* Remove default focus outline */
+button:focus,
+button:active,
+a:focus,
+a:active,
+[role="button"]:focus,
+[role="button"]:active {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
 
 /* =========================================================
    BACKGROUND DECORATION
@@ -13687,3 +13758,4 @@ button {
     }
 
 }
+
