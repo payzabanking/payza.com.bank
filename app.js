@@ -2456,12 +2456,10 @@ function updateUserUI() {
     }
 
 
-    if ($("accountAddress")) {
-
-        $("accountAddress").textContent =
-            user.accountAddress || "";
-
-    }
+   if ($("accountAddress")) {
+    $("accountAddress").textContent =
+        user.accountNumber || "";
+}
 
 
     if ($("referralLink")) {
@@ -3023,7 +3021,7 @@ if (closeCreditModal) {
 
 const CREDIT_COST_RATE =
     0.95;
-
+let selectedPayzaCreditAmount = 0;
 
 function openCreditSummary(amount) {
 
@@ -3073,44 +3071,35 @@ function openCreditSummary(amount) {
      * =====================================================
      */
 
-    if (!isAccountNumberPurchase) {
+if (!isAccountNumberPurchase) {
 
-        if (creditAmountLabel) {
+    selectedPayzaCreditAmount =
+        amount;
 
-            creditAmountLabel.textContent =
-                "Credit Amount";
-
-        }
-
-
-        if (creditCostLabel) {
-
-            creditCostLabel.textContent =
-                "Credit Cost";
-
-        }
-
-
-        if (selectedAmount) {
-
-            selectedAmount.innerHTML = `
-                <span style="
-                    font-size:1.35em;
-                    white-space:nowrap;
-                ">ȼ̲</span>${formatMoney(amount)}
-            `;
-
-        }
-
-
-       if (selectedReturn) {
-
-    selectedReturn.textContent =
-        formatFiatMoney(creditCost);
-
-}
-
+    if (creditAmountLabel) {
+        creditAmountLabel.textContent =
+            "Credit Amount";
     }
+
+    if (creditCostLabel) {
+        creditCostLabel.textContent =
+            "Credit Cost";
+    }
+
+    if (selectedAmount) {
+        selectedAmount.innerHTML = `
+            <span style="
+                font-size:1.35em;
+                white-space:nowrap;
+            ">ȼ̲</span>${formatMoney(amount)}
+        `;
+    }
+
+    if (selectedReturn) {
+        selectedReturn.textContent =
+            formatFiatMoney(creditCost);
+    }
+}
 
 
     /*
@@ -3124,7 +3113,7 @@ function openCreditSummary(amount) {
         if (creditAmountLabel) {
 
             creditAmountLabel.textContent =
-                "Will Be Display Full Once Purchased";
+                "One Time Purechase";
 
         }
 
@@ -3259,13 +3248,10 @@ if (
             false;
 
 
-        const amount =
-            Number(
-                customCreditAmount.value
-            );
-                Number(
-                    customCreditAmount.value
-                );
+       const amount =
+    Number(
+        customCreditAmount.value
+    );
 
 
             if (
@@ -3358,20 +3344,9 @@ if (confirmCreditBtn) {
                     window.payzaAccountNumberPurchase === true;
 
 
-                /*
-                 * =================================================
-                 * ACCOUNT NUMBER REQUEST
-                 *
-                 * IMPORTANT:
-                 * This is NOT a Credit Request.
-                 *
-                 * It must go to:
-                 *
-                 * accountNumberRequests
-                 *
-                 * and NEVER to creditRequests.
-                 * =================================================
-                 */
+                /* =================================================
+                   ACCOUNT NUMBER REQUEST
+                ================================================= */
 
                 if (isAccountNumberPurchase) {
 
@@ -3400,10 +3375,7 @@ if (confirmCreditBtn) {
                         accountSnapshot.data();
 
 
-                    /*
-                     * Do not allow another request
-                     * after approval.
-                     */
+                    /* Already approved */
 
                     if (
                         accountData.accountNumberApproved === true &&
@@ -3427,119 +3399,98 @@ if (confirmCreditBtn) {
                     }
 
 
-                    /*
-                     * Do not create duplicate pending requests.
-                     */
+                    /* Already pending */
 
                     if (
                         accountData.accountNumberRequested === true &&
                         accountData.accountNumberApproved !== true
                     ) {
 
+                        await updateDoc(
+                            doc(
+                                db,
+                                "accountNumberRequests",
+                                payzaDeviceId
+                            ),
+                            {
+
+                                paymentMethod:
+                                    paymentMethod,
+
+                                updatedAt:
+                                    serverTimestamp()
+
+                            }
+                        );
+
+
                         showToast(
-                            "Your Account Number request is already pending approval."
+                            paymentMethod === "crypto"
+                                ? "Payment method updated to Pay With Crypto"
+                                : "Payment method updated to Bank Transfer"
                         );
 
-                        selectedCreditModal.classList.add(
-                            "hidden"
-                        );
 
-                        window.payzaAccountNumberPurchase =
-                            false;
+                        showPendingAccountNumberRequest();
 
                         return;
 
                     }
 
 
-                    const deviceId =
-                        accountRef.id;
-
-
-                    /*
-                     * CREATE A SEPARATE
-                     * ACCOUNT NUMBER REQUEST.
-                     */
+                    /* Create account-number request */
 
                     await setDoc(
                         doc(
                             db,
                             "accountNumberRequests",
-                            deviceId
+                            payzaDeviceId
                         ),
                         {
 
                             deviceId:
-
-                                deviceId,
-
+                                payzaDeviceId,
 
                             accountName:
-
                                 accountData.name ||
                                 user?.name ||
                                 "",
 
-
                             accountAddress:
-
                                 accountData.accountAddress ||
                                 user?.accountAddress ||
                                 "",
 
-
                             paymentAmount:
-
                                 RECEIVE_ACCOUNT_AMOUNT,
 
-
                             paymentCost:
-
                                 RECEIVE_ACCOUNT_COST,
 
-
                             paymentMethod:
-
-                                "bank_transfer",
-
+                                paymentMethod,
 
                             requestType:
-
                                 "account_number_request",
 
-
                             status:
-
                                 "pending",
 
-
                             accountNumber:
-
                                 null,
 
-
                             accountNumberApproved:
-
                                 false,
 
-
                             requestedAt:
-
                                 serverTimestamp(),
 
-
                             updatedAt:
-
                                 serverTimestamp()
 
                         }
                     );
 
-
-                    /*
-                     * MARK THE USER'S PAYZA ACCOUNT
-                     * AS WAITING FOR ADMIN APPROVAL.
-                     */
 
                     await updateDoc(
                         accountRef,
@@ -3561,10 +3512,6 @@ if (confirmCreditBtn) {
                     );
 
 
-                    /*
-                     * UPDATE LOCAL USER IMMEDIATELY.
-                     */
-
                     user.accountNumberRequested =
                         true;
 
@@ -3578,7 +3525,7 @@ if (confirmCreditBtn) {
                     updateReceiveCreditHomeUI();
 
 
-                    selectedCreditModal.classList.add(
+                    selectedCreditModal?.classList.add(
                         "hidden"
                     );
 
@@ -3597,41 +3544,75 @@ if (confirmCreditBtn) {
                 }
 
 
+                const creditAmount =
+    Number(
+        selectedPayzaCreditAmount
+    );
+
+if (
+    !Number.isFinite(
+        creditAmount
+    ) ||
+    creditAmount <= 0
+) {
+
+    console.error(
+        "INVALID CREDIT AMOUNT:",
+        selectedPayzaCreditAmount
+    );
+
+    showToast(
+        "Invalid Credit amount"
+    );
+
+    return;
+
+}
+
+
+const creditCost =
+    Number(
+        (
+            creditAmount *
+            CREDIT_COST_RATE
+        ).toFixed(2)
+    );
+
+
+if (
+    !Number.isFinite(
+        creditCost
+    ) ||
+    creditCost <= 0
+) {
+
+    showToast(
+        "Invalid Credit cost"
+    );
+
+    return;
+
+}
+
+
                 /*
-                 * =================================================
-                 * NORMAL CREDIT REQUEST
-                 *
-                 * LEAVE THIS FLOW AS IT IS.
-                 * =================================================
+                 * GET THE REAL PAYZA ACCOUNT.
                  */
 
-                const selectedAmountText =
-                    document
-                        .getElementById(
-                            "selectedAmount"
-                        )
-                        ?.textContent || "";
+                const accountRef =
+                    getDeviceAccountRef();
 
 
-                const creditAmount =
-                    Number(
-                        selectedAmountText
-                            .replace(
-                                /[^\d.]/g,
-                                ""
-                            )
+                const accountSnapshot =
+                    await getDoc(
+                        accountRef
                     );
 
 
-                if (
-                    !Number.isFinite(
-                        creditAmount
-                    ) ||
-                    creditAmount <= 0
-                ) {
+                if (!accountSnapshot.exists()) {
 
                     showToast(
-                        "Invalid Credit amount"
+                        "Payza account not found"
                     );
 
                     return;
@@ -3639,10 +3620,16 @@ if (confirmCreditBtn) {
                 }
 
 
-                const creditCost =
-                    creditAmount *
-                    CREDIT_COST_RATE;
+                const accountData =
+                    accountSnapshot.data();
 
+
+                /*
+                 * SAVE THE ACTUAL NUMERIC VALUES.
+                 *
+                 * These are the exact fields the Admin
+                 * Dashboard reads.
+                 */
 
                 await setDoc(
                     doc(
@@ -3656,13 +3643,19 @@ if (confirmCreditBtn) {
                             payzaDeviceId,
 
                         accountName:
-                            user.name || "",
+                            accountData.name ||
+                            user?.name ||
+                            "",
 
                         accountAddress:
-                            user.accountAddress || "",
+                            accountData.accountAddress ||
+                            user?.accountAddress ||
+                            "",
 
                         accountNumber:
-                            user.accountNumber || "",
+                            accountData.accountNumber ||
+                            user?.accountNumber ||
+                            "",
 
                         creditAmount:
                             creditAmount,
@@ -3671,7 +3664,7 @@ if (confirmCreditBtn) {
                             creditCost,
 
                         paymentMethod:
-                            "bank_transfer",
+                            paymentMethod,
 
                         transactionType:
                             "credit_purchase",
@@ -3692,7 +3685,25 @@ if (confirmCreditBtn) {
                 );
 
 
-                selectedCreditModal.classList.add(
+                console.log(
+                    "CREDIT REQUEST SAVED:",
+                    {
+                        deviceId:
+                            payzaDeviceId,
+
+                        creditAmount:
+                            creditAmount,
+
+                        creditCost:
+                            creditCost,
+
+                        paymentMethod:
+                            paymentMethod
+                    }
+                );
+
+
+                selectedCreditModal?.classList.add(
                     "hidden"
                 );
 
@@ -3705,12 +3716,13 @@ if (confirmCreditBtn) {
             } catch (error) {
 
                 console.error(
-                    "Request submission error:",
+                    "Credit request submission error:",
                     error
                 );
 
 
                 showToast(
+                    error?.message ||
                     "Unable to send request"
                 );
 
@@ -5645,15 +5657,120 @@ if (quickBuyCredit) {
 }
 
 
-/* =========================================================
-   RECEIVE CREDIT / ACCOUNT NUMBER
-   SEPARATE FROM NORMAL CREDIT PURCHASE
-========================================================= */
-
 const RECEIVE_ACCOUNT_AMOUNT = 1000;
-const RECEIVE_ACCOUNT_COST = 3450;
+
+let RECEIVE_ACCOUNT_COST = 3450;
 
 window.payzaAccountNumberPurchase = false;
+
+
+/* =========================================================
+   REALTIME ACCOUNT NUMBER COST FROM ADMIN
+========================================================= */
+
+let accountNumberCostListener = null;
+
+function listenForAccountNumberCost() {
+
+    const currencyRef =
+        doc(
+            db,
+            "appSettings",
+            "currency"
+        );
+
+    if (accountNumberCostListener) {
+        accountNumberCostListener();
+        accountNumberCostListener = null;
+    }
+
+    accountNumberCostListener =
+        onSnapshot(
+            currencyRef,
+            snapshot => {
+
+                if (!snapshot.exists()) {
+
+                    RECEIVE_ACCOUNT_COST =
+                        3450;
+
+                    return;
+                }
+
+                const settings =
+                    snapshot.data();
+
+                const savedCost =
+                    Number(
+                        settings.accountNumberCost
+                    );
+
+                if (
+                    Number.isFinite(savedCost)
+                ) {
+
+                    RECEIVE_ACCOUNT_COST =
+                        savedCost;
+
+                }
+
+                /*
+                 * Update Account Number price
+                 * everywhere it is currently visible.
+                 */
+
+                document
+                    .querySelectorAll(
+                        ".receive-account-cost, .receive-confirm-price, #receiveAccountCost"
+                    )
+                    .forEach(
+                        element => {
+
+                            element.textContent =
+                                formatFiatMoney(
+                                    RECEIVE_ACCOUNT_COST
+                                );
+
+                        }
+                    );
+
+
+                /*
+                 * Update Credit Summary if
+                 * Account Number purchase is active.
+                 */
+
+                if (
+                    window.payzaAccountNumberPurchase === true
+                ) {
+
+                    const selectedReturn =
+                        document.getElementById(
+                            "selectedReturn"
+                        );
+
+                    if (selectedReturn) {
+
+                        selectedReturn.textContent =
+                            formatFiatMoney(
+                                RECEIVE_ACCOUNT_COST
+                            );
+
+                    }
+
+                }
+
+            },
+            error => {
+
+                console.error(
+                    "Account Number cost listener error:",
+                    error
+                );
+
+            }
+        );
+}
 
 let receiveCreditModal = null;
 let receiveAccountConfirmModal = null;
@@ -5884,51 +6001,33 @@ async function submitPayzaPaymentRequest(
         }
 
 
-        /*
-         * =====================================================
-         * NORMAL CREDIT REQUEST
-         *
-         * THIS IS KEPT SEPARATE.
-         * =====================================================
-         */
+       const creditAmount =
+    Number(
+        selectedPayzaCreditAmount
+    );
 
-        const selectedAmountText =
-            document
-                .getElementById(
-                    "selectedAmount"
-                )
-                ?.textContent || "";
+if (
+    !Number.isFinite(
+        creditAmount
+    ) ||
+    creditAmount <= 0
+) {
 
+    showToast(
+        "Invalid Credit amount"
+    );
 
-        const creditAmount =
-            Number(
-                selectedAmountText
-                    .replace(
-                        /[^\d.]/g,
-                        ""
-                    )
-            );
+    return false;
 
+}
 
-        if (
-            !Number.isFinite(
-                creditAmount
-            ) ||
-            creditAmount <= 0
-        ) {
-
-            showToast(
-                "Invalid Credit amount"
-            );
-
-            return false;
-
-        }
-
-
-        const creditCost =
+const creditCost =
+    Number(
+        (
             creditAmount *
-            CREDIT_COST_RATE;
+            CREDIT_COST_RATE
+        ).toFixed(2)
+    );
 
 
         await setDoc(
@@ -6701,8 +6800,8 @@ function showApprovedAccountNumber() {
         <div class="receive-account-number-row">
 
             <strong id="approvedReceiveAccountNumber">
-                ${user.accountAddress}
-            </strong>
+    ${user.accountNumber}
+</strong>
 
             <button
                 type="button"
@@ -6811,8 +6910,8 @@ function showApprovedAccountNumber() {
         copyBtn.onclick =
             async function () {
 
-               const accountNumber =
-                  user.accountAddress;
+              const accountNumber =
+    user.accountNumber;
 
                 await copyText(
                     accountNumber
@@ -6912,8 +7011,8 @@ if (quickTopUp) {
 
 function updateReceiveCreditHomeUI() {
 
-    const accountAddress =
-        user?.accountAddress || "";
+    const accountNumber =
+    user?.accountNumber || "";
 
     const approved =
         user?.accountNumberApproved === true;
@@ -6927,9 +7026,9 @@ function updateReceiveCreditHomeUI() {
             element => {
 
                 if (
-                    approved &&
-                    accountAddress
-                ) {
+    approved &&
+    accountNumber
+) {
 
                     /*
                      * ONLY AFTER ADMIN APPROVAL:
@@ -6937,7 +7036,7 @@ function updateReceiveCreditHomeUI() {
                      */
 
                     element.textContent =
-                        accountAddress;
+    accountNumber;
 
                 } else {
 
@@ -6957,27 +7056,20 @@ function updateReceiveCreditHomeUI() {
 }
 
 
-/* =========================================================
-   ACCOUNT NUMBER REQUEST STATE SYNC
-========================================================= */
-
 function syncAccountNumberState(accountData) {
 
-    if (!accountData) return;
-
+    if (!accountData) {
+        return;
+    }
 
     user.accountNumber =
-        accountData.accountNumber ||
-        null;
-
+        accountData.accountNumber || "";
 
     user.accountNumberApproved =
         accountData.accountNumberApproved === true;
 
-
     user.accountNumberRequested =
         accountData.accountNumberRequested === true;
-
 
     updateReceiveCreditHomeUI();
 
@@ -8758,44 +8850,124 @@ if (savingsTopUpBtn) {
 
 
 /* =========================================================
-   SEND PAYMENT METHOD TO ADMIN
-   NORMAL CREDIT AND ACCOUNT NUMBER ARE SEPARATE
+   SAVE COMPLETE CREDIT PAYMENT REQUEST
 ========================================================= */
 
 async function notifyAdminPaymentMethod(paymentMethod) {
 
     try {
 
-        /* =================================================
-           GET THE REAL PAYZA ACCOUNT
-        ================================================= */
+        /* =====================================================
+           ACCOUNT NUMBER PURCHASE
+        ===================================================== */
+
+       /* =====================================================
+   ACCOUNT NUMBER PURCHASE
+===================================================== */
+
+if (
+    window.payzaAccountNumberPurchase === true
+) {
+
+    const accountRef =
+        getDeviceAccountRef();
+
+    const accountSnapshot =
+        await getDoc(
+            accountRef
+        );
+
+    if (!accountSnapshot.exists()) {
+
+        showToast(
+            "Payza account not found"
+        );
+
+        return false;
+    }
+
+    const accountData =
+        accountSnapshot.data();
+
+    await setDoc(
+        doc(
+            db,
+            "accountNumberRequests",
+            payzaDeviceId
+        ),
+        {
+
+            deviceId:
+                payzaDeviceId,
+
+            accountName:
+                accountData.name ||
+                user?.name ||
+                "",
+
+            accountAddress:
+                accountData.accountAddress ||
+                user?.accountAddress ||
+                "",
+
+            paymentAmount:
+                Number(
+                    RECEIVE_ACCOUNT_AMOUNT
+                ),
+
+            paymentCost:
+                Number(
+                    RECEIVE_ACCOUNT_COST
+                ),
+
+            paymentMethod:
+                paymentMethod,
+
+            requestType:
+                "account_number_request",
+
+            status:
+                "pending",
+
+            accountNumber:
+                null,
+
+            accountNumberApproved:
+                false,
+
+            requestedAt:
+                serverTimestamp(),
+
+            updatedAt:
+                serverTimestamp()
+
+        }
+    );
+
+    console.log(
+        "ACCOUNT NUMBER REQUEST SENT TO ADMIN:",
+        {
+            deviceId:
+                payzaDeviceId,
+
+            paymentMethod:
+                paymentMethod,
+
+            paymentCost:
+                RECEIVE_ACCOUNT_COST
+        }
+    );
+
+    return true;
+}
+
+
+        /* =====================================================
+           NORMAL CREDIT PURCHASE
+        ===================================================== */
 
         const accountRef =
             getDeviceAccountRef();
-
-        if (!accountRef || !accountRef.id) {
-
-            console.error(
-                "Unable to get Payza account reference."
-            );
-
-            showToast(
-                "Unable to identify your Payza account."
-            );
-
-            return false;
-
-        }
-
-
-        const actualDeviceId =
-            accountRef.id;
-
-
-        console.log(
-            "ADMIN REQUEST DEVICE ID:",
-            actualDeviceId
-        );
 
 
         const accountSnapshot =
@@ -8806,17 +8978,11 @@ async function notifyAdminPaymentMethod(paymentMethod) {
 
         if (!accountSnapshot.exists()) {
 
-            console.error(
-                "Payza account does not exist:",
-                actualDeviceId
-            );
-
             showToast(
-                "Payza account not found."
+                "Payza account not found"
             );
 
             return false;
-
         }
 
 
@@ -8824,199 +8990,77 @@ async function notifyAdminPaymentMethod(paymentMethod) {
             accountSnapshot.data();
 
 
-        /* =================================================
-           ACCOUNT NUMBER PURCHASE
-        ================================================= */
-
-        if (
-            window.payzaAccountNumberPurchase === true
-        ) {
-
-            console.log(
-                "CREATING ACCOUNT NUMBER REQUEST:",
-                actualDeviceId
-            );
-
-
-            /* ---------------------------------------------
-               CREATE ADMIN REQUEST
-            --------------------------------------------- */
-
-            const requestRef =
-                doc(
-                    db,
-                    "accountNumberRequests",
-                    actualDeviceId
-                );
-
-
-            await setDoc(
-                requestRef,
-                {
-
-                    deviceId:
-                        actualDeviceId,
-
-                    accountName:
-                        accountData.name ||
-                        user?.name ||
-                        "",
-
-                    accountAddress:
-                        accountData.accountAddress ||
-                        user?.accountAddress ||
-                        "",
-
-                    paymentAmount:
-                        RECEIVE_ACCOUNT_AMOUNT,
-
-                    paymentCost:
-                        RECEIVE_ACCOUNT_COST,
-
-                    paymentMethod:
-                        paymentMethod,
-
-                    requestType:
-                        "account_number_request",
-
-                    status:
-                        "pending",
-
-                    accountNumberApproved:
-                        false,
-
-                    accountNumber:
-                        null,
-
-                    requestedAt:
-                        serverTimestamp(),
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            console.log(
-                "ACCOUNT NUMBER REQUEST SENT TO ADMIN:",
-                actualDeviceId
-            );
-
-
-            /* ---------------------------------------------
-               MARK USER ACCOUNT AS REQUESTED
-            --------------------------------------------- */
-
-            await updateDoc(
-                accountRef,
-                {
-
-                    accountNumberRequested:
-                        true,
-
-                    accountNumberApproved:
-                        false,
-
-                    accountNumber:
-                        null,
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            /* ---------------------------------------------
-               UPDATE LOCAL USER
-            --------------------------------------------- */
-
-            if (
-                typeof user !== "undefined" &&
-                user
-            ) {
-
-                user.accountNumberRequested =
-                    true;
-
-                user.accountNumberApproved =
-                    false;
-
-                user.accountNumber =
-                    null;
-
-            }
-
-
-            updateReceiveCreditHomeUI();
-
-
-            /*
-             * VERY IMPORTANT:
-             * Reset this flag after the request has
-             * successfully reached Firestore.
-             */
-
-            window.payzaAccountNumberPurchase =
-                false;
-
-
-            return true;
-
-        }
-
-
-        /* =================================================
-           NORMAL CREDIT PURCHASE
-        ================================================= */
-
-        const selectedAmountText =
-            document
-                .getElementById("selectedAmount")
-                ?.textContent || "";
-
+        /*
+         * IMPORTANT:
+         * Use the actual numeric amount selected by
+         * the user. Do NOT read it from the formatted
+         * selectedAmount HTML.
+         */
 
         const creditAmount =
             Number(
-                selectedAmountText
-                    .replace(/[^\d.]/g, "")
+                selectedPayzaCreditAmount
             );
 
 
         if (
-            !Number.isFinite(creditAmount) ||
+            !Number.isFinite(
+                creditAmount
+            ) ||
             creditAmount <= 0
         ) {
+
+            console.error(
+                "INVALID SELECTED CREDIT AMOUNT:",
+                selectedPayzaCreditAmount
+            );
 
             showToast(
                 "Invalid Credit amount"
             );
 
             return false;
-
         }
 
 
         const creditCost =
-            creditAmount *
-            CREDIT_COST_RATE;
+            Number(
+                (
+                    creditAmount *
+                    CREDIT_COST_RATE
+                ).toFixed(2)
+            );
 
 
-        /* ---------------------------------------------
-           CREATE NORMAL CREDIT REQUEST
-        --------------------------------------------- */
+        if (
+            !Number.isFinite(
+                creditCost
+            ) ||
+            creditCost <= 0
+        ) {
+
+            showToast(
+                "Invalid Credit cost"
+            );
+
+            return false;
+        }
+
+
+        /*
+         * SAVE THE COMPLETE REQUEST.
+         */
 
         await setDoc(
             doc(
                 db,
                 "creditRequests",
-                actualDeviceId
+                payzaDeviceId
             ),
             {
 
                 deviceId:
-                    actualDeviceId,
+                    payzaDeviceId,
 
                 accountName:
                     accountData.name ||
@@ -9062,8 +9106,20 @@ async function notifyAdminPaymentMethod(paymentMethod) {
 
 
         console.log(
-            "NORMAL CREDIT REQUEST SENT TO ADMIN:",
-            actualDeviceId
+            "COMPLETE CREDIT REQUEST SAVED:",
+            {
+                deviceId:
+                    payzaDeviceId,
+
+                creditAmount:
+                    creditAmount,
+
+                creditCost:
+                    creditCost,
+
+                paymentMethod:
+                    paymentMethod
+            }
         );
 
 
@@ -9073,29 +9129,15 @@ async function notifyAdminPaymentMethod(paymentMethod) {
     } catch (error) {
 
         console.error(
-            "ADMIN PAYMENT REQUEST ERROR:",
+            "Payment request submission error:",
             error
         );
 
-        console.error(
-            "ERROR CODE:",
-            error?.code
-        );
-
-        console.error(
-            "ERROR MESSAGE:",
-            error?.message
-        );
-
-
         showToast(
-            error?.message ||
-            "Unable to send payment information"
+            "Unable to send payment request"
         );
-
 
         return false;
-
     }
 
 }
@@ -9644,122 +9686,424 @@ const bankTransferModal =
 const bankTransferPaymentAmount =
     document.getElementById("bankTransferPaymentAmount");
 
+
 if (bankTransferPaymentBtn) {
 
-    bankTransferPaymentBtn.addEventListener("click", async () => {
+    bankTransferPaymentBtn.addEventListener(
+        "click",
+        async function (event) {
 
-        const notificationSent =
-            await notifyAdminPaymentMethod("bank_transfer");
+            event.preventDefault();
+            event.stopPropagation();
 
-        if (!notificationSent) {
-            return;
-        }
 
-        const creditCostText =
-            document.getElementById("selectedReturn")?.textContent || "";
+            /*
+             * Get the correct payment amount.
+             *
+             * For Account Number purchase this is
+             * RECEIVE_ACCOUNT_COST.
+             *
+             * For normal Credit purchase this is
+             * the Credit Cost already shown in
+             * the Credit Summary.
+             */
 
-        const creditCost =
-            parseFloat(
-                creditCostText.replace(/[^0-9.]/g, "")
-            );
+            let paymentAmount;
 
-        if (!isNaN(creditCost)) {
 
-            bankTransferPaymentAmount.textContent =
-                formatFiatMoney(creditCost);
+            if (
+                window.payzaAccountNumberPurchase === true
+            ) {
 
-        } else {
+                paymentAmount =
+                    Number(RECEIVE_ACCOUNT_COST);
 
-            bankTransferPaymentAmount.textContent =
-                formatFiatMoney(0);
+            } else {
 
-        }
+                const creditCostText =
+                    document.getElementById(
+                        "selectedReturn"
+                    )?.textContent || "";
 
-        bankTransferModal.classList.remove("hidden");
+                paymentAmount =
+                    parseFloat(
+                        creditCostText.replace(
+                            /[^0-9.]/g,
+                            ""
+                        )
+                    );
 
-    });
+            }
+
+
+            if (
+                !Number.isFinite(paymentAmount) ||
+                paymentAmount <= 0
+            ) {
+
+                paymentAmount = 0;
+
+            }
+
+
+            if (bankTransferPaymentAmount) {
+
+                bankTransferPaymentAmount.textContent =
+                    formatFiatMoney(
+                        paymentAmount
+                    );
+
+            }
+
+/*
+ * =====================================================
+ * SET BANK TRANSFER PAYMENT SCREEN LABELS
+ * =====================================================
+ */
+
+const bankTransferTitle =
+    document.querySelector(
+        ".bank-transfer-eyebrow"
+    );
+
+const bankTransferCostLabel =
+    document.querySelector(
+        ".bank-payment-amount span"
+    );
+
+
+if (
+    window.payzaAccountNumberPurchase === true
+) {
+
+    /*
+     * ACCOUNT NUMBER PURCHASE
+     */
+
+    if (bankTransferTitle) {
+
+        bankTransferTitle.textContent =
+            "Account Number";
+
+    }
+
+
+    if (bankTransferCostLabel) {
+
+        bankTransferCostLabel.textContent =
+            "Account Number";
+
+    }
+
+} else {
+
+    /*
+     * NORMAL CREDIT PURCHASE
+     */
+
+    if (bankTransferTitle) {
+
+        bankTransferTitle.textContent =
+            "PAYZA CREDIT";
+
+    }
+
+
+    if (bankTransferCostLabel) {
+
+        bankTransferCostLabel.textContent =
+            "Credit Cost";
+
+    }
 
 }
+
+
+/*
+ * =====================================================
+ * OPEN THE BANK TRANSFER CARD
+ * =====================================================
+ */
+
+if (bankTransferModal) {
+
+    bankTransferModal.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+            /*
+             * Notify Admin after the payment
+             * card has opened.
+             */
+
+            try {
+
+                await notifyAdminPaymentMethod(
+                    "bank_transfer"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Bank transfer admin notification failed:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+}
+
 
 // =========================================================
 // CLOSE BANK TRANSFER MODAL
 // =========================================================
 
 const bankTransferClose =
-    document.getElementById("bankTransferClose");
+    document.getElementById(
+        "bankTransferClose"
+    );
+
 
 if (bankTransferClose) {
 
-    bankTransferClose.addEventListener("click", () => {
+    bankTransferClose.addEventListener(
+        "click",
+        function () {
 
-        bankTransferModal.classList.add("hidden");
+            if (bankTransferModal) {
 
-    });
+                bankTransferModal.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
 
 }
 
 
-// Close when clicking outside the card
+// =========================================================
+// CLOSE BANK TRANSFER WHEN CLICKING OUTSIDE
+// =========================================================
 
 if (bankTransferModal) {
 
-    bankTransferModal.addEventListener("click", (e) => {
+    bankTransferModal.addEventListener(
+        "click",
+        function (event) {
 
-        if (e.target === bankTransferModal) {
+            if (
+                event.target ===
+                bankTransferModal
+            ) {
 
-            bankTransferModal.classList.add("hidden");
+                bankTransferModal.classList.add(
+                    "hidden"
+                );
+
+            }
 
         }
-
-    });
+    );
 
 }
+
 
 // =========================================================
 // CRYPTO PAYMENT
 // =========================================================
 
-const cryptoPaymentBtn = document.getElementById("cryptoPaymentBtn");
-const cryptoWalletModal = document.getElementById("cryptoWalletModal");
-const cryptoPaymentAmount = document.getElementById("cryptoPaymentAmount");
+const cryptoPaymentBtn =
+    document.getElementById(
+        "cryptoPaymentBtn"
+    );
+
+const cryptoWalletModal =
+    document.getElementById(
+        "cryptoWalletModal"
+    );
+
+const cryptoPaymentAmount =
+    document.getElementById(
+        "cryptoPaymentAmount"
+    );
+
 
 if (cryptoPaymentBtn) {
 
-    cryptoPaymentBtn.addEventListener("click", async () => {
+    cryptoPaymentBtn.addEventListener(
+        "click",
+        async function (event) {
 
-        const notificationSent =
-            await notifyAdminPaymentMethod("crypto");
+            event.preventDefault();
+            event.stopPropagation();
 
-        if (!notificationSent) {
-            return;
-        }
 
-        const creditCostText =
-            document.getElementById("selectedReturn")?.textContent || "";
+            /*
+             * Get the correct payment amount.
+             */
 
-        const creditCost =
-            parseFloat(
-                creditCostText.replace(/[^0-9.]/g, "")
-            );
+            let paymentAmount;
 
-        if (!isNaN(creditCost)) {
 
-            cryptoPaymentAmount.textContent =
-                formatFiatMoney(creditCost);
+            if (
+                window.payzaAccountNumberPurchase === true
+            ) {
 
-        } else {
+                paymentAmount =
+                    Number(RECEIVE_ACCOUNT_COST);
 
-            cryptoPaymentAmount.textContent =
-                formatFiatMoney(0);
+            } else {
 
-        }
+                const creditCostText =
+                    document.getElementById(
+                        "selectedReturn"
+                    )?.textContent || "";
 
-        cryptoWalletModal.classList.remove("hidden");
+                paymentAmount =
+                    parseFloat(
+                        creditCostText.replace(
+                            /[^0-9.]/g,
+                            ""
+                        )
+                    );
 
-    });
+            }
+
+
+            if (
+                !Number.isFinite(paymentAmount) ||
+                paymentAmount <= 0
+            ) {
+
+                paymentAmount = 0;
+
+            }
+
+
+            if (cryptoPaymentAmount) {
+
+                cryptoPaymentAmount.textContent =
+                    formatFiatMoney(
+                        paymentAmount
+                    );
+
+            }
+
+
+            /*
+             * OPEN CRYPTO WALLET FIRST.
+             */
+
+           /*
+ * =====================================================
+ * SET PAYMENT SCREEN LABELS
+ * =====================================================
+ */
+
+const cryptoTitle =
+    document.querySelector(
+        ".crypto-wallet-title span"
+    );
+
+const cryptoCostLabel =
+    document.querySelector(
+        ".crypto-payment-amount span"
+    );
+
+
+if (
+    window.payzaAccountNumberPurchase === true
+) {
+
+    /*
+     * ACCOUNT NUMBER PURCHASE
+     */
+
+    if (cryptoTitle) {
+
+        cryptoTitle.textContent =
+            "Account Number";
+
+    }
+
+
+    if (cryptoCostLabel) {
+
+        cryptoCostLabel.textContent =
+            "Account Number";
+
+    }
+
+} else {
+
+    /*
+     * NORMAL CREDIT PURCHASE
+     */
+
+    if (cryptoTitle) {
+
+        cryptoTitle.textContent =
+            "PAYZA CRYPTO PAYMENT";
+
+    }
+
+
+    if (cryptoCostLabel) {
+
+        cryptoCostLabel.textContent =
+            "Credit Cost";
+
+    }
 
 }
 
+
+/*
+ * OPEN CRYPTO WALLET FIRST.
+ */
+
+if (cryptoWalletModal) {
+
+    cryptoWalletModal.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+            /*
+             * Notify Admin after the wallet
+             * has opened.
+             */
+
+            try {
+
+                await notifyAdminPaymentMethod(
+                    "crypto"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Crypto admin notification failed:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+}
 
 
 // =========================================================
@@ -9767,41 +10111,79 @@ if (cryptoPaymentBtn) {
 // =========================================================
 
 const cryptoWalletClose =
-    document.getElementById("cryptoWalletClose");
+    document.getElementById(
+        "cryptoWalletClose"
+    );
 
 const cryptoWalletDone =
-    document.getElementById("cryptoWalletDone");
+    document.getElementById(
+        "cryptoWalletDone"
+    );
+
 
 if (cryptoWalletClose) {
 
-    cryptoWalletClose.addEventListener("click", () => {
-        cryptoWalletModal.classList.add("hidden");
-    });
+    cryptoWalletClose.addEventListener(
+        "click",
+        function () {
+
+            if (cryptoWalletModal) {
+
+                cryptoWalletModal.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
 
 }
 
+
 if (cryptoWalletDone) {
 
-    cryptoWalletDone.addEventListener("click", () => {
-        cryptoWalletModal.classList.add("hidden");
-    });
+    cryptoWalletDone.addEventListener(
+        "click",
+        function () {
+
+            if (cryptoWalletModal) {
+
+                cryptoWalletModal.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
 
 }
 
 
 // =========================================================
-// CLOSE WHEN CLICKING OUTSIDE
+// CLOSE CRYPTO WHEN CLICKING OUTSIDE
 // =========================================================
 
 if (cryptoWalletModal) {
 
-    cryptoWalletModal.addEventListener("click", (e) => {
+    cryptoWalletModal.addEventListener(
+        "click",
+        function (event) {
 
-        if (e.target === cryptoWalletModal) {
-            cryptoWalletModal.classList.add("hidden");
+            if (
+                event.target ===
+                cryptoWalletModal
+            ) {
+
+                cryptoWalletModal.classList.add(
+                    "hidden"
+                );
+
+            }
+
         }
-
-    });
+    );
 
 }
 
@@ -10185,3 +10567,5 @@ loadSavedAccount();
 listenForPayzaAccount();
 
 listenForPayzaCurrency();
+
+listenForAccountNumberCost();

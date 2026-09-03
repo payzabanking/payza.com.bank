@@ -516,68 +516,452 @@ const payzaSettingsRef =
         "currency"
     );
 
- /* =========================================================
+    /* =========================================================
    ACCOUNT NUMBER REQUESTS
 ========================================================= */
 
+const accountNumberRequestsRef =
+    collection(
+        db,
+        "accountNumberRequests"
+    );
+
 let allAccountNumberRequests = [];
+
+    /* =========================================================
+   WITHDRAWAL REQUESTS
+========================================================= */
+
+const withdrawalRequestsRef =
+    collection(db, "withdrawalRequests");
+
+
+let allWithdrawalRequests = [];
+
+let currentWithdrawalFilter = "all";
+
+let currentWithdrawalSearch = "";
 
 
 /* =========================================================
-   RENDER ACCOUNT NUMBER REQUESTS
+   WITHDRAWAL DOM ELEMENTS
 ========================================================= */
 
-function renderAccountNumberRequests() {
+const withdrawalList =
+    document.getElementById("withdrawalList");
 
-    const list =
-        document.getElementById(
-            "accountNumberRequestList"
+const pendingWithdrawalStat =
+    document.getElementById(
+        "pendingWithdrawalStat"
+    );
+
+    const pendingWithdrawalSidebarCount =
+    document.getElementById(
+        "pendingWithdrawalSidebarCount"
+    );
+
+const withdrawalSearch =
+    document.getElementById(
+        "withdrawalSearch"
+    );
+
+
+function createWithdrawalCard(request) {
+
+    const status =
+        String(
+            request.status || "pending"
+        ).toLowerCase();
+
+
+    const isPending =
+        status === "pending";
+
+
+    const amount =
+        Number(
+            request.withdrawalAmount ??
+            request.amount ??
+            0
         );
 
-    const pendingStat =
-        document.getElementById(
-            "pendingAccountNumberStat"
+
+    const fee =
+        Number(
+            request.withdrawalFee ??
+            amount * 0.05
         );
 
 
-    if (!list) {
-        return;
-    }
-
-
-    const pending =
-        allAccountNumberRequests.filter(
-            request =>
-                String(
-                    request.status || "pending"
-                ).toLowerCase() === "pending"
+    const amountReceived =
+        Number(
+            request.amountReceived ??
+            (amount - fee)
         );
 
 
-    if (pendingStat) {
-
-        pendingStat.textContent =
-            pending.length;
-
-    }
+    const customerName =
+        request.accountName ||
+        request.userName ||
+        "Unknown User";
 
 
-    if (!allAccountNumberRequests.length) {
+    const bankName =
+        request.bankName ||
+        "Not provided";
 
-        list.innerHTML = `
 
-            <div class="empty-state">
+    const accountNumber =
+        request.bankAccountNumber ||
+        request.accountNumber ||
+        "Not provided";
 
-                <div class="empty-icon">
-                    #
-                </div>
+
+    const bankAccountName =
+        request.bankAccountName ||
+        request.accountName ||
+        "Not provided";
+
+
+    const card =
+        document.createElement("div");
+
+
+    card.className =
+        "request-card";
+
+
+    card.dataset.withdrawalId =
+        request.id || "";
+
+
+    card.innerHTML = `
+
+        <div class="request-card-top">
+<div class="request-user">
+
+    <div class="request-avatar"> 
+        ${escapeHTML( 
+            String( 
+                request.accountName ||
+                request.userName ||
+                request.name ||
+                "U"
+            )
+                .charAt(0)
+                .toUpperCase()
+        )}
+    </div>
+
+    <div>
+
+        <strong>
+            ${escapeHTML(
+                request.accountName ||
+                request.userName ||
+                request.name ||
+                "Unknown Account"
+            )}
+        </strong>
+
+        <span>
+            ${escapeHTML(
+                request.accountAddress ||
+                request.accountNumber ||
+                request.deviceId ||
+                "Payza Account"
+            )}
+        </span>
+
+    </div>
+
+</div>
+
+            ${statusBadge(status)}
+
+        </div>
+
+
+        <div class="request-card-main">
+
+            <div class="request-info">
+
+                <span>
+                    Amount to Withdraw
+                </span>
 
                 <strong>
-                    No Account Number requests
+                    ${formatExternalMoney(amount)}
+            </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Withdrawal Fee
+                </span>
+
+                <strong>
+                  ${formatExternalMoney(fee)}
+          </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Amount Received
+                </span>
+
+                <strong>
+              ${formatExternalMoney(amountReceived)}
+          </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Bank Name
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        bankName
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Account Number
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        accountNumber
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Account Name
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        bankAccountName
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="request-card-details">
+
+            <div>
+
+                <span>
+                    Device ID
+                </span>
+
+                <strong class="device-value">
+                    ${escapeHTML(
+                        request.deviceId ||
+                        "Unknown"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Requested
+                </span>
+
+                <strong>
+                    ${formatDate(
+                        request.createdAt ||
+                        request.requestedAt
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+        <div class="request-card-actions">
+
+            ${
+                isPending
+                    ? `
+                        <button
+                            class="request-approve-btn"
+                            data-withdrawal-action="approve"
+                            data-id="${escapeHTML(
+                                request.id
+                            )}"
+                        >
+                            Approve
+                        </button>
+
+                        <button
+                            class="request-reject-btn"
+                            data-withdrawal-action="reject"
+                            data-id="${escapeHTML(
+                                request.id
+                            )}"
+                        >
+                            Reject
+                        </button>
+                    `
+                    : ""
+            }
+
+
+            <button
+                class="request-delete-btn"
+                data-withdrawal-action="delete"
+                data-id="${escapeHTML(
+                    request.id
+                )}"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+/* =========================================================
+   FILTER WITHDRAWALS
+========================================================= */
+
+function getFilteredWithdrawalRequests() {
+
+    let requests =
+        [...allWithdrawalRequests];
+
+
+    if (
+        currentWithdrawalFilter !==
+        "all"
+    ) {
+
+        requests =
+            requests.filter(
+                function (request) {
+
+                    return String(
+                        request.status ||
+                        "pending"
+                    ).toLowerCase() ===
+                        currentWithdrawalFilter;
+
+                }
+            );
+
+    }
+
+
+    if (currentWithdrawalSearch) {
+
+        const search =
+            currentWithdrawalSearch
+                .toLowerCase();
+
+
+        requests =
+            requests.filter(
+                function (request) {
+
+                    return [
+
+                        request.accountName,
+
+                        request.userName,
+
+                        request.bankName,
+
+                        request.accountNumber,
+
+                        request.deviceId,
+
+                        request.accountAddress
+
+                    ]
+                        .filter(Boolean)
+                        .some(
+                            function (value) {
+
+                                return String(value)
+                                    .toLowerCase()
+                                    .includes(search);
+
+                            }
+                        );
+
+                }
+            );
+
+    }
+
+
+    return requests;
+
+}
+
+
+/* =========================================================
+   RENDER WITHDRAWALS
+========================================================= */
+
+function renderWithdrawalList() {
+
+    if (!withdrawalList) return;
+
+
+    const requests =
+        getFilteredWithdrawalRequests();
+
+
+    if (!requests.length) {
+
+        withdrawalList.innerHTML = `
+
+            <div class="empty-state large">
+
+                <div class="empty-icon">
+             ${escapeHTML(externalCurrencySymbol)}
+       </div>
+
+                <strong>
+                    No withdrawal requests
                 </strong>
 
                 <span>
-                    New Account Number requests will appear here.
+                    Customer withdrawal requests will appear here.
                 </span>
 
             </div>
@@ -589,458 +973,14 @@ function renderAccountNumberRequests() {
     }
 
 
-    list.innerHTML =
-        allAccountNumberRequests
-            .map(
-                request => {
+    withdrawalList.innerHTML = "";
 
-                    const status =
-                        String(
-                            request.status ||
-                            "pending"
-                        ).toLowerCase();
 
+    requests.forEach(
+        function (request) {
 
-                    const isPending =
-                        status === "pending";
-
-
-                    return `
-
-                        <div class="request-card">
-
-                            <div class="request-card-header">
-
-                                <div>
-
-                                    <span class="heading-label">
-                                        ACCOUNT NUMBER REQUEST
-                                    </span>
-
-                                    <h3>
-                                        ${escapeHTML(
-                                            request.accountName ||
-                                            "Account"
-                                        )}
-                                    </h3>
-
-                                </div>
-
-
-                                <span class="
-                                    request-status
-                                    ${status}
-                                ">
-                                    ${escapeHTML(
-                                        status
-                                    )}
-                                </span>
-
-                            </div>
-
-
-                            <div class="request-card-body">
-
-                                <div class="request-detail">
-
-                                    <span>
-                                        Device ID
-                                    </span>
-
-                                    <strong>
-                                        ${escapeHTML(
-                                            request.deviceId ||
-                                            "—"
-                                        )}
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="request-detail">
-
-                                    <span>
-                                        Request Type
-                                    </span>
-
-                                    <strong>
-                                        Account Number
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="request-detail">
-
-                                    <span>
-                                        Payment Method
-                                    </span>
-
-                                    <strong>
-                                        ${escapeHTML(
-                                            request.paymentMethod ||
-                                            "—"
-                                        )}
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="request-detail">
-
-                                    <span>
-                                        Account Number Cost
-                                    </span>
-
-                                    <strong>
-                                        ${formatMoney(
-                                            Number(
-                                                request.paymentCost ||
-                                                0
-                                            )
-                                        )}
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="request-card-actions">
-
-                                ${
-                                    isPending
-                                        ? `
-                                            <button
-                                                type="button"
-                                                class="approve-btn"
-                                                data-account-number-action="approve"
-                                                data-id="${escapeHTML(
-                                                    request.id
-                                                )}"
-                                            >
-                                                Approve Account Number
-                                            </button>
-                                          `
-                                        : `
-                                            <span class="request-completed">
-                                                Account Number ${status}
-                                            </span>
-                                          `
-                                }
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-}
-
-
-/* =========================================================
-   GENERATE UNIQUE PAYZA ACCOUNT NUMBER
-========================================================= */
-
-async function generateUniquePayzaAccountNumber() {
-
-    let accountNumber;
-
-    let exists = true;
-
-
-    while (exists) {
-
-        const randomNumber =
-            Math.floor(
-                1000000000 +
-                Math.random() * 9000000000
-            )
-                .toString();
-
-
-        accountNumber =
-            `PAYZA-${randomNumber}`;
-
-
-        const accountsSnapshot =
-            await getDocs(
-                collection(
-                    db,
-                    "payzaAccounts"
-                )
-            );
-
-
-        exists =
-            accountsSnapshot.docs.some(
-                document => {
-
-                    const data =
-                        document.data();
-
-
-                    return (
-                        data.accountAddress ===
-                            accountNumber ||
-
-                        data.accountNumber ===
-                            accountNumber
-                    );
-
-                }
-            );
-
-    }
-
-
-    return accountNumber;
-
-}
-
-
-/* =========================================================
-   APPROVE ACCOUNT NUMBER REQUEST
-========================================================= */
-
-async function approveAccountNumberRequest(
-    request
-) {
-
-    if (
-        !request ||
-        !request.id ||
-        !request.deviceId
-    ) {
-
-        showToast(
-            "Approval Error",
-            "The Account Number request is invalid."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        const accountRef =
-            doc(
-                db,
-                "payzaAccounts",
-                String(
-                    request.deviceId
-                )
-            );
-
-
-        const accountSnapshot =
-            await getDoc(
-                accountRef
-            );
-
-
-        if (!accountSnapshot.exists()) {
-
-            throw new Error(
-                "The user's Payza account could not be found."
-            );
-
-        }
-
-
-        const accountData =
-            accountSnapshot.data();
-
-
-        if (
-            accountData.accountNumberApproved === true &&
-            accountData.accountNumber
-        ) {
-
-            await updateDoc(
-                doc(
-                    db,
-                    "accountNumberRequests",
-                    request.id
-                ),
-                {
-
-                    status:
-                        "approved",
-
-                    accountNumber:
-                        accountData.accountNumber,
-
-                    accountNumberApproved:
-                        true,
-
-                    approvedAt:
-                        serverTimestamp(),
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            showToast(
-                "Account Number Approved",
-                "This user already has an Account Number."
-            );
-
-            return;
-
-        }
-
-
-        const accountNumber =
-            await generateUniquePayzaAccountNumber();
-
-
-        await updateDoc(
-            accountRef,
-            {
-
-                accountNumber:
-                    accountNumber,
-
-                accountAddress:
-                    accountNumber,
-
-                accountNumberApproved:
-                    true,
-
-                accountNumberRequested:
-                    true,
-
-                updatedAt:
-                    serverTimestamp()
-
-            }
-        );
-
-
-        await updateDoc(
-            doc(
-                db,
-                "accountNumberRequests",
-                request.id
-            ),
-            {
-
-                status:
-                    "approved",
-
-                accountNumber:
-                    accountNumber,
-
-                accountNumberApproved:
-                    true,
-
-                approvedAt:
-                    serverTimestamp(),
-
-                updatedAt:
-                    serverTimestamp()
-
-            }
-        );
-
-
-        await addActivity(
-            "Account Number Approved",
-            `${request.accountName || "Account"} was assigned ${accountNumber}.`
-        );
-
-
-        showToast(
-            "Account Number Approved",
-            `${accountNumber} has been assigned successfully.`
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Account Number approval error:",
-            error
-        );
-
-
-        showToast(
-            "Approval Error",
-            error.message ||
-            "Unable to approve Account Number request."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   REALTIME ACCOUNT NUMBER REQUEST LISTENER
-========================================================= */
-
-function listenForAccountNumberRequests() {
-
-    onSnapshot(
-        collection(
-            db,
-            "accountNumberRequests"
-        ),
-
-        function (snapshot) {
-
-            allAccountNumberRequests =
-                snapshot.docs
-                    .map(
-                        function (document) {
-
-                            return {
-
-                                id:
-                                    document.id,
-
-                                ...document.data()
-
-                            };
-
-                        }
-                    )
-                    .sort(
-                        function (a, b) {
-
-                            return getRequestTime(b)
-                                -
-                                getRequestTime(a);
-
-                        }
-                    );
-
-
-            renderAccountNumberRequests();
-
-        },
-
-        function (error) {
-
-            console.error(
-                "Account Number request listener error:",
-                error
-            );
-
-
-            showToast(
-                "Connection Error",
-                "Unable to receive Account Number requests."
+            withdrawalList.appendChild(
+                createWithdrawalCard(request)
             );
 
         }
@@ -1050,7 +990,342 @@ function listenForAccountNumberRequests() {
 
 
 /* =========================================================
-   ACCOUNT NUMBER APPROVE BUTTON
+   UPDATE WITHDRAWAL STATISTICS
+========================================================= */
+
+function updateWithdrawalStatistics() {
+
+    const pending =
+        allWithdrawalRequests.filter(
+            function (request) {
+
+                return String(
+                    request.status ||
+                    "pending"
+                ).toLowerCase() ===
+                    "pending";
+
+            }
+        );
+
+
+    if (pendingWithdrawalStat) {
+
+        pendingWithdrawalStat.textContent =
+            pending.length;
+
+    }
+
+
+    if (pendingWithdrawalSidebarCount) {
+
+        pendingWithdrawalSidebarCount.textContent =
+            pending.length;
+
+    }
+
+}
+
+
+/* =========================================================
+   APPROVE WITHDRAWAL
+========================================================= */
+
+async function approveWithdrawal(request) {
+
+    if (!request || !request.id) {
+
+        throw new Error(
+            "Withdrawal request ID is missing."
+        );
+
+    }
+
+
+    if (!request.deviceId) {
+
+        throw new Error(
+            "This withdrawal request does not contain a device ID."
+        );
+
+    }
+
+
+    const requestRef =
+        doc(
+            db,
+            "withdrawalRequests",
+            request.id
+        );
+
+
+    const requestSnapshot =
+        await getDoc(requestRef);
+
+
+    if (!requestSnapshot.exists()) {
+
+        throw new Error(
+            "Withdrawal request no longer exists."
+        );
+
+    }
+
+
+    const currentRequest =
+        requestSnapshot.data();
+
+
+    if (
+        String(
+            currentRequest.status ||
+            "pending"
+        ).toLowerCase() !==
+        "pending"
+    ) {
+
+        throw new Error(
+            "This withdrawal request has already been processed."
+        );
+
+    }
+
+
+    const accountRef =
+        doc(
+            db,
+            "payzaAccounts",
+            request.deviceId
+        );
+
+
+    const accountSnapshot =
+        await getDoc(accountRef);
+
+
+    if (!accountSnapshot.exists()) {
+
+        throw new Error(
+            "Payza account for this device was not found."
+        );
+
+    }
+
+
+    const accountData =
+        accountSnapshot.data();
+
+
+    /*
+     * Security check:
+     * The withdrawal must belong to
+     * this exact Payza device.
+     */
+
+    if (
+        accountData.deviceId &&
+        accountData.deviceId !==
+        request.deviceId
+    ) {
+
+        throw new Error(
+            "Device verification failed."
+        );
+
+    }
+
+
+    const amount =
+        Number(
+            currentRequest.amount ||
+            currentRequest.withdrawalAmount ||
+            0
+        );
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        throw new Error(
+            "Invalid withdrawal amount."
+        );
+
+    }
+
+
+    const currentBalance =
+        Number(
+            accountData.balance || 0
+        );
+
+
+    /*
+     * Make sure the user's balance
+     * is still sufficient.
+     */
+
+    if (
+        currentBalance <
+        amount
+    ) {
+
+        throw new Error(
+            "The user's available balance is insufficient for this withdrawal."
+        );
+
+    }
+
+
+    /*
+     * Deduct the approved withdrawal
+     * from the EXACT user's device account.
+     */
+
+    await updateDoc(
+        accountRef,
+        {
+
+            balance:
+                increment(-amount),
+
+            updatedAt:
+                serverTimestamp()
+
+        }
+    );
+
+
+    /*
+     * Mark ONLY this withdrawal request
+     * as approved.
+     */
+
+    await updateDoc(
+        requestRef,
+        {
+
+            status:
+                "approved",
+
+            approvedAmount:
+                amount,
+
+            approvedAt:
+                serverTimestamp(),
+
+            updatedAt:
+                serverTimestamp()
+
+        }
+    );
+
+
+    await addActivity(
+        "Withdrawal Approved",
+        `${currentRequest.accountName || currentRequest.userName || "Account"} withdrawal of ${formatExternalMoney(amount)} was approved for device ${request.deviceId}.`
+    );
+
+
+    showToast(
+        "Withdrawal Approved",
+        "The withdrawal has been approved successfully."
+    );
+
+}
+
+
+/* =========================================================
+   REJECT WITHDRAWAL
+========================================================= */
+
+async function rejectWithdrawal(request) {
+
+    if (!request || !request.id) {
+
+        throw new Error(
+            "Withdrawal request ID is missing."
+        );
+
+    }
+
+
+    await updateDoc(
+        doc(
+            db,
+            "withdrawalRequests",
+            request.id
+        ),
+        {
+
+            status:
+                "rejected",
+
+            rejectedAt:
+                serverTimestamp(),
+
+            updatedAt:
+                serverTimestamp()
+
+        }
+    );
+
+
+    await addActivity(
+        "Withdrawal Rejected",
+        `${request.accountName || request.userName || "Account"} withdrawal request was rejected.`
+    );
+
+
+    showToast(
+        "Withdrawal Rejected",
+        "The withdrawal request has been rejected."
+    );
+
+}
+
+
+/* =========================================================
+   DELETE WITHDRAWAL
+========================================================= */
+
+async function deleteWithdrawal(request) {
+
+    if (!request || !request.id) {
+
+        throw new Error(
+            "Withdrawal request ID is missing."
+        );
+
+    }
+
+
+    await deleteDoc(
+        doc(
+            db,
+            "withdrawalRequests",
+            request.id
+        )
+    );
+
+
+    await addActivity(
+        "Withdrawal Deleted",
+        `${request.accountName || request.userName || "Account"} withdrawal request was deleted.`
+    );
+
+
+    showToast(
+        "Withdrawal Deleted",
+        "The withdrawal request has been removed."
+    );
+
+}
+
+
+/* =========================================================
+   WITHDRAWAL BUTTON EVENTS
 ========================================================= */
 
 document.addEventListener(
@@ -1059,17 +1334,15 @@ document.addEventListener(
 
         const button =
             event.target.closest(
-                "[data-account-number-action]"
+                "[data-withdrawal-action]"
             );
 
 
-        if (!button) {
-            return;
-        }
+        if (!button) return;
 
 
         const action =
-            button.dataset.accountNumberAction;
+            button.dataset.withdrawalAction;
 
 
         const id =
@@ -1077,32 +1350,69 @@ document.addEventListener(
 
 
         const request =
-            allAccountNumberRequests.find(
-                item =>
-                    item.id === id
+            allWithdrawalRequests.find(
+                function (item) {
+
+                    return item.id === id;
+
+                }
             );
 
 
-        if (!request) {
-            return;
-        }
+        if (!request) return;
 
 
-        if (
-            action === "approve"
-        ) {
+        if (action === "approve") {
 
             openConfirmation(
-                "Approve Account Number",
-                `Approve an Account Number for ${request.accountName || "this account"}? A unique Payza Account Number will be generated and assigned to this device.`,
+                "Approve Withdrawal",
+               `Approve the ${formatExternalMoney(Number(request.amount || request.withdrawalAmount || 0))} withdrawal for ${request.accountName || request.userName || "this user"}? The amount will be deducted from the user's Available Balance.`,
                 function () {
 
-                    return approveAccountNumberRequest(
+                    return approveWithdrawal(
                         request
                     );
 
                 },
                 "approve"
+            );
+
+            return;
+
+        }
+
+
+        if (action === "reject") {
+
+            openConfirmation(
+                "Reject Withdrawal",
+                `Reject the withdrawal request from ${request.accountName || request.userName || "this user"}?`,
+                function () {
+
+                    return rejectWithdrawal(
+                        request
+                    );
+
+                }
+            );
+
+            return;
+
+        }
+
+
+        if (action === "delete") {
+
+            openConfirmation(
+                "Delete Withdrawal",
+                "Delete this withdrawal request permanently from the Admin Dashboard?",
+                function () {
+
+                    return deleteWithdrawal(
+                        request
+                    );
+
+                }
             );
 
         }
@@ -1112,26 +1422,69 @@ document.addEventListener(
 
 
 /* =========================================================
-   REALTIME ACCOUNT NUMBER REQUEST LISTENER
+   REALTIME WITHDRAWAL REQUEST LISTENER
 ========================================================= */
 
-function listenForAccountNumberRequests() {
+function listenForWithdrawalRequests() {
+
+    console.log(
+        "========================================"
+    );
+
+    console.log(
+        "STARTING WITHDRAWAL REQUEST LISTENER"
+    );
+
+    console.log(
+        "Firestore collection: withdrawalRequests"
+    );
+
+    console.log(
+        "withdrawalRequestsRef:",
+        withdrawalRequestsRef
+    );
+
 
     onSnapshot(
-        accountNumberRequestsRef,
+        withdrawalRequestsRef,
 
         function (snapshot) {
 
-            allAccountNumberRequests =
+            console.log(
+                "========================================"
+            );
+
+            console.log(
+                "WITHDRAWAL SNAPSHOT RECEIVED"
+            );
+
+            console.log(
+                "DOCUMENT COUNT:",
+                snapshot.size
+            );
+
+
+            allWithdrawalRequests =
                 snapshot.docs.map(
                     function (document) {
+
+                        const data =
+                            document.data();
+
+
+                        console.log(
+                            "WITHDRAWAL DOCUMENT RECEIVED:",
+                            document.id,
+                            data
+                        );
+
 
                         return {
 
                             id:
                                 document.id,
 
-                            ...document.data()
+                            ...data
 
                         };
 
@@ -1139,7 +1492,7 @@ function listenForAccountNumberRequests() {
                 );
 
 
-            allAccountNumberRequests.sort(
+            allWithdrawalRequests.sort(
                 function (a, b) {
 
                     return getRequestTime(b)
@@ -1151,12 +1504,2419 @@ function listenForAccountNumberRequests() {
 
 
             console.log(
-                "ACCOUNT NUMBER REQUESTS RECEIVED:",
-                allAccountNumberRequests
+                "TOTAL WITHDRAWAL REQUESTS:",
+                allWithdrawalRequests.length
             );
 
 
-            renderAccountNumberRequests();
+            console.log(
+                "WITHDRAWAL REQUESTS:",
+                allWithdrawalRequests
+            );
+
+
+            updateWithdrawalStatistics();
+
+            renderWithdrawalList();
+
+
+            console.log(
+                "WITHDRAWAL LIST RENDERED"
+            );
+
+        },
+
+        function (error) {
+
+            console.error(
+                "========================================"
+            );
+
+            console.error(
+                "WITHDRAWAL LISTENER ERROR"
+            );
+
+            console.error(
+                "ERROR CODE:",
+                error?.code
+            );
+
+            console.error(
+                "ERROR MESSAGE:",
+                error?.message
+            );
+
+            console.error(
+                "FULL ERROR:",
+                error
+            );
+
+
+            if (withdrawalList) {
+
+                withdrawalList.innerHTML = `
+
+                    <div class="empty-state large">
+
+                        <div class="empty-icon">
+                            !
+                        </div>
+
+                        <strong>
+                            Unable to load withdrawal requests
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(
+                                error?.message ||
+                                "Unable to connect to withdrawal requests."
+                            )}
+                        </span>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            showToast(
+                "Withdrawal Connection Error",
+                error?.message ||
+                "Unable to receive withdrawal requests."
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   WITHDRAWAL SEARCH
+========================================================= */
+
+if (withdrawalSearch) {
+
+    withdrawalSearch.addEventListener(
+        "input",
+        function () {
+
+            currentWithdrawalSearch =
+                withdrawalSearch.value.trim();
+
+
+            renderWithdrawalList();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   WITHDRAWAL FILTERS
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".withdrawal-filter-btn"
+    )
+    .forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    document
+                        .querySelectorAll(
+                            ".withdrawal-filter-btn"
+                        )
+                        .forEach(
+                            function (item) {
+
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    currentWithdrawalFilter =
+                        button.dataset.filter ||
+                        "all";
+
+
+                    renderWithdrawalList();
+
+                }
+            );
+
+        }
+    );
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function escapeHTML(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function formatMoney(value) {
+
+    const number =
+        parseCreditValue(value);
+
+    return `${externalCurrencySymbol}${number.toLocaleString(
+        "en-US",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    )}`;
+}
+
+
+function formatExternalMoney(value) {
+
+    const number =
+        parseCreditValue(value);
+
+    return `${externalCurrencySymbol}${number.toLocaleString(
+        "en-US",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    )}`;
+
+}
+
+function formatDate(timestamp) {
+
+    if (!timestamp) {
+        return "Just now";
+    }
+
+    try {
+
+        const date =
+            timestamp.toDate
+                ? timestamp.toDate()
+                : new Date(timestamp);
+
+        return date.toLocaleString(
+            "en-US",
+            {
+                dateStyle: "medium",
+                timeStyle: "short"
+            }
+        );
+
+    } catch {
+
+        return "Just now";
+
+    }
+}
+
+
+function getRequestTime(request) {
+
+    const timestamp =
+        request.createdAt ||
+        request.requestedAt ||
+        request.updatedAt ||
+        request.approvedAt ||
+        request.rejectedAt;
+
+    if (!timestamp) {
+        return 0;
+    }
+
+    try {
+
+        if (
+            typeof timestamp.toMillis ===
+            "function"
+        ) {
+            return timestamp.toMillis();
+        }
+
+        if (
+            timestamp.seconds !== undefined
+        ) {
+            return Number(timestamp.seconds) * 1000;
+        }
+
+        const parsed =
+            new Date(timestamp).getTime();
+
+        return Number.isFinite(parsed)
+            ? parsed
+            : 0;
+
+    } catch {
+
+        return 0;
+
+    }
+}
+
+
+function showToast(
+    title,
+    message
+) {
+
+    if (!adminToast) return;
+
+    if (adminToastTitle) {
+        adminToastTitle.textContent = title;
+    }
+
+    if (adminToastMessage) {
+        adminToastMessage.textContent = message;
+    }
+
+    adminToast.classList.add("show");
+
+    setTimeout(
+        function () {
+
+            adminToast.classList.remove("show");
+
+        },
+        3500
+    );
+}
+
+/* =========================================================
+   CURRENCY SETTINGS
+========================================================= */
+
+function updateCurrencyPreview() {
+
+    const symbol =
+        currencySymbolInput?.value.trim() ||
+        externalCurrencySymbol ||
+        "₦";
+
+
+    const cost =
+        Number(
+            accountNumberCostInput?.value
+        );
+
+
+    if (currencyPreviewBalance) {
+
+        currencyPreviewBalance.textContent =
+            `${symbol}206,328.13`;
+
+    }
+
+
+    if (currencyPreviewWithdrawal) {
+
+        currencyPreviewWithdrawal.textContent =
+            `${symbol}206,328.13`;
+
+    }
+
+
+    if (currencyPreviewAccountCost) {
+
+        currencyPreviewAccountCost.textContent =
+            `${symbol}${(
+                Number.isFinite(cost)
+                    ? cost
+                    : accountNumberCost
+            ).toLocaleString(
+                "en-US",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            )}`;
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD CURRENCY SETTINGS
+========================================================= */
+
+async function loadCurrencySettings() {
+
+    try {
+
+        const snapshot =
+            await getDoc(
+                payzaSettingsRef
+            );
+
+
+        if (snapshot.exists()) {
+
+            const data =
+                snapshot.data();
+
+
+            if (
+                typeof data.symbol ===
+                "string" &&
+                data.symbol.trim()
+            ) {
+
+                externalCurrencySymbol =
+                    data.symbol.trim();
+
+            }
+
+
+            if (
+                Number.isFinite(
+                    Number(
+                        data.accountNumberCost
+                    )
+                )
+            ) {
+
+                accountNumberCost =
+                    Number(
+                        data.accountNumberCost
+                    );
+
+            }
+
+        }
+
+
+        if (currencySymbolInput) {
+
+            currencySymbolInput.value =
+                externalCurrencySymbol;
+
+        }
+
+
+        if (accountNumberCostInput) {
+
+            accountNumberCostInput.value =
+                accountNumberCost;
+
+        }
+
+
+        updateCurrencyPreview();
+
+
+        console.log(
+            "Currency settings loaded:",
+            {
+                symbol:
+                    externalCurrencySymbol,
+
+                accountNumberCost:
+                    accountNumberCost
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Unable to load currency settings:",
+            error
+        );
+
+
+        showToast(
+            "Settings Error",
+            "Unable to load currency settings."
+        );
+
+    }
+
+}
+
+
+async function saveCurrencySettings() {
+
+    try {
+
+        const currencySymbolInput =
+            document.getElementById(
+                "currencySymbolInput"
+            );
+
+        const accountNumberCostInput =
+            document.getElementById(
+                "accountNumberCostInput"
+            );
+
+
+        if (!currencySymbolInput) {
+            return;
+        }
+
+
+        const symbol =
+            currencySymbolInput.value.trim();
+
+
+        const newAccountNumberCost =
+            Number(
+                accountNumberCostInput?.value
+            );
+
+
+        if (!symbol) {
+
+            alert(
+                "Please enter a currency symbol."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !Number.isFinite(
+                newAccountNumberCost
+            ) ||
+            newAccountNumberCost < 0
+        ) {
+
+            alert(
+                "Please enter a valid Account Number Cost."
+            );
+
+            return;
+
+        }
+
+
+        /* =========================================
+           SAVE BOTH SETTINGS TO FIREBASE
+        ========================================= */
+
+        await setDoc(
+            doc(
+                db,
+                "appSettings",
+                "currency"
+            ),
+            {
+
+                symbol:
+                    symbol,
+
+                accountNumberCost:
+                    newAccountNumberCost,
+
+                updatedAt:
+                    serverTimestamp()
+
+            },
+            {
+                merge: true
+            }
+        );
+
+
+        /* =========================================
+           UPDATE CURRENT ADMIN VALUES
+        ========================================= */
+
+        externalCurrencySymbol =
+            symbol;
+
+        accountNumberCost =
+            newAccountNumberCost;
+
+
+        /* =========================================
+           SAVE LOCALLY
+        ========================================= */
+
+        localStorage.setItem(
+            "payzaCurrencySymbol",
+            symbol
+        );
+
+        localStorage.setItem(
+            "payzaAccountNumberCost",
+            String(
+                newAccountNumberCost
+            )
+        );
+
+
+        /* =========================================
+           UPDATE PREVIEW IMMEDIATELY
+        ========================================= */
+
+        updateCurrencyPreview();
+
+
+        /* =========================================
+           NOTIFY OTHER PAYZA UI
+        ========================================= */
+
+        window.payzaCurrencySymbol =
+            symbol;
+
+        window.payzaAccountNumberCost =
+            newAccountNumberCost;
+
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "payzaCurrencyChanged",
+                {
+                    detail: {
+
+                        symbol:
+                            symbol,
+
+                        accountNumberCost:
+                            newAccountNumberCost
+
+                    }
+                }
+            )
+        );
+
+
+        alert(
+            "Currency and Account Number Cost updated successfully."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Currency and Account Number settings update error:",
+            error
+        );
+
+
+        alert(
+            "Unable to update Currency and Account Number Cost."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CURRENCY SETTINGS INPUT PREVIEW
+========================================================= */
+
+if (currencySymbolInput) {
+
+    currencySymbolInput.addEventListener(
+        "input",
+        function () {
+
+            updateCurrencyPreview();
+
+        }
+    );
+
+}
+
+
+if (accountNumberCostInput) {
+
+    accountNumberCostInput.addEventListener(
+        "input",
+        function () {
+
+            updateCurrencyPreview();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SAVE CURRENCY SETTINGS BUTTON
+========================================================= */
+
+if (saveCurrencySettingsBtn) {
+
+    saveCurrencySettingsBtn.addEventListener(
+        "click",
+        function () {
+
+            saveCurrencySettings();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   LOAD SETTINGS WHEN ADMIN OPENS
+========================================================= */
+
+loadCurrencySettings();
+
+/* =========================================================
+   STATUS BADGE
+========================================================= */
+
+function statusBadge(status) {
+
+    const safeStatus =
+        String(status || "pending")
+            .toLowerCase();
+
+    if (safeStatus === "approved") {
+
+        return `
+            <span class="request-status approved">
+                APPROVED
+            </span>
+        `;
+
+    }
+
+    if (safeStatus === "rejected") {
+
+        return `
+            <span class="request-status rejected">
+                REJECTED
+            </span>
+        `;
+
+    }
+
+    return `
+        <span class="request-status pending">
+            PENDING
+        </span>
+    `;
+}
+
+
+/* =========================================================
+   PAYMENT METHOD
+========================================================= */
+
+function paymentMethodLabel(method) {
+
+    const value =
+        String(method || "Bank Transfer");
+
+    if (
+        value.toLowerCase()
+            .includes("crypto")
+    ) {
+
+        return `
+            <span class="payment-method crypto">
+                Pay With Crypto
+            </span>
+        `;
+
+    }
+
+    return `
+        <span class="payment-method bank">
+            Bank Transfer
+        </span>
+    `;
+}
+
+
+function createRequestCard(request) {
+
+    const status =
+        String(request.status || "pending").toLowerCase();
+
+    const isPending =
+        status === "pending";
+
+const creditAmount =
+    parseCreditValue(
+        request.creditAmount
+    );
+
+const creditCost =
+    parseCreditValue(
+        request.creditCost
+    );
+
+    const paymentMethod =
+        request.paymentMethod ||
+        "Not provided";
+
+    const deviceId =
+        request.deviceId ||
+        "Unknown Device";
+
+    const accountAddress =
+        request.accountAddress ||
+        "Not provided";
+
+    const accountName =
+        request.accountName ||
+        "Unknown Account";
+
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "request-card";
+
+    card.dataset.requestId =
+        request.id || "";
+
+
+    card.innerHTML = `
+
+        <div class="request-card-top">
+
+            <div class="request-user">
+
+                <div class="request-avatar">
+                    ${escapeHTML(
+                        String(accountName)
+                            .charAt(0)
+                            .toUpperCase()
+                    )}
+                </div>
+
+                <div>
+
+                    <strong>
+                        ${escapeHTML(accountName)}
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(accountAddress)}
+                    </span>
+
+                </div>
+
+            </div>
+
+            ${statusBadge(status)}
+
+        </div>
+
+
+        <div class="request-card-main">
+
+            <div class="request-info">
+
+                <span>
+                    Credit Amount
+                </span>
+
+                <strong>
+                   ${formatMoney(creditAmount)}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Credit Cost
+                </span>
+
+                <strong>
+                    ${formatExternalMoney(
+    creditCost
+)}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Payment Method
+                </span>
+
+                <strong>
+                    ${paymentMethodLabel(
+                        paymentMethod
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Device
+                </span>
+
+                <strong class="device-value">
+                    ${escapeHTML(
+                        String(deviceId)
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Account Address
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        String(accountAddress)
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="request-card-actions">
+
+            ${
+                isPending
+                    ? `
+
+                        <button
+                            class="request-approve-btn"
+                            data-action="approve"
+                            data-id="${escapeHTML(
+                                request.id || ""
+                            )}"
+                        >
+                            Approve
+                        </button>
+
+                        <button
+                            class="request-reject-btn"
+                            data-action="reject"
+                            data-id="${escapeHTML(
+                                request.id || ""
+                            )}"
+                        >
+                            Reject
+                        </button>
+
+                    `
+                    : ""
+            }
+
+
+            <button
+                class="request-delete-btn"
+                data-action="delete"
+                data-id="${escapeHTML(
+                    request.id || ""
+                )}"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+/* =========================================================
+   RENDER REQUEST LIST
+========================================================= */
+
+function getFilteredRequests() {
+
+    let requests =
+        [...allRequests];
+
+
+    if (currentFilter !== "all") {
+
+        requests =
+            requests.filter(
+                function (request) {
+
+                    return String(
+                        request.status ||
+                        "pending"
+                    ).toLowerCase() ===
+                        currentFilter;
+
+                }
+            );
+
+    }
+
+
+    if (currentSearch) {
+
+        const search =
+            currentSearch.toLowerCase();
+
+
+        requests =
+            requests.filter(
+                function (request) {
+
+                    return [
+
+                        request.accountName,
+
+                        request.accountAddress,
+
+                        request.deviceId,
+
+                        request.paymentMethod
+
+                    ]
+                        .filter(Boolean)
+                        .some(
+                            function (value) {
+
+                                return String(value)
+                                    .toLowerCase()
+                                    .includes(search);
+
+                            }
+                        );
+
+                }
+            );
+
+    }
+
+
+    return requests;
+
+}
+
+
+function renderRequestList() {
+
+    if (!requestList) return;
+
+
+    const requests =
+        getFilteredRequests();
+
+
+    if (!requests.length) {
+
+        requestList.innerHTML = `
+
+            <div class="empty-state large">
+
+                <div class="empty-icon">
+                    ◎
+                </div>
+
+                <strong>
+                    No credit requests
+                </strong>
+
+                <span>
+                    Requests from Payza users will appear here instantly.
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    requestList.innerHTML = "";
+
+
+    requests.forEach(
+        function (request) {
+
+            requestList.appendChild(
+                createRequestCard(request)
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER RECENT REQUESTS
+========================================================= */
+
+function renderRecentRequests() {
+
+    if (!recentRequests) return;
+
+
+    const requests =
+        [...allRequests]
+            .sort(
+                function (a, b) {
+
+                    return getRequestTime(b)
+                        - getRequestTime(a);
+
+                }
+            )
+            .slice(0, 5);
+
+
+    if (!requests.length) {
+
+        recentRequests.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ◌
+                </div>
+
+                <strong>
+                    No requests yet
+                </strong>
+
+                <span>
+                    New credit requests will appear here automatically.
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    recentRequests.innerHTML = "";
+
+
+    requests.forEach(
+        function (request) {
+
+            const card =
+                createRequestCard(request);
+
+            recentRequests.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER APPROVED
+========================================================= */
+
+function renderApprovedRequests() {
+
+    if (!approvedList) return;
+
+
+    const requests =
+        allRequests.filter(
+            function (request) {
+
+                return String(
+                    request.status
+                ).toLowerCase() ===
+                    "approved";
+
+            }
+        );
+
+
+    if (!requests.length) {
+
+        approvedList.innerHTML = `
+
+            <div class="empty-state large">
+
+                <div class="empty-icon">
+                    ✓
+                </div>
+
+                <strong>
+                    No approved requests
+                </strong>
+
+                <span>
+                    Approved requests will appear here.
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    approvedList.innerHTML = "";
+
+
+    requests.forEach(
+        function (request) {
+
+            approvedList.appendChild(
+                createRequestCard(request)
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER REJECTED
+========================================================= */
+
+function renderRejectedRequests() {
+
+    if (!rejectedList) return;
+
+
+    const requests =
+        allRequests.filter(
+            function (request) {
+
+                return String(
+                    request.status
+                ).toLowerCase() ===
+                    "rejected";
+
+            }
+        );
+
+
+    if (!requests.length) {
+
+        rejectedList.innerHTML = `
+
+            <div class="empty-state large">
+
+                <div class="empty-icon">
+                    ×
+                </div>
+
+                <strong>
+                    No rejected requests
+                </strong>
+
+                <span>
+                    Rejected requests will appear here.
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    rejectedList.innerHTML = "";
+
+
+    requests.forEach(
+        function (request) {
+
+            rejectedList.appendChild(
+                createRequestCard(request)
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE STATISTICS
+========================================================= */
+
+function updateStatistics() {
+
+    const pending =
+        allRequests.filter(
+            request =>
+                String(
+                    request.status ||
+                    "pending"
+                ).toLowerCase() ===
+                "pending"
+        );
+
+
+    const approved =
+        allRequests.filter(
+            request =>
+                String(
+                    request.status
+                ).toLowerCase() ===
+                "approved"
+        );
+
+
+    const rejected =
+        allRequests.filter(
+            request =>
+                String(
+                    request.status
+                ).toLowerCase() ===
+                "rejected"
+        );
+
+
+    const approvedAmount =
+        approved.reduce(
+            function (total, request) {
+
+                return total +
+                    (
+                        Number(
+                            request.creditAmount
+                        ) || 0
+                    );
+
+            },
+            0
+        );
+
+
+    if (sidebarPendingCount) {
+
+        sidebarPendingCount.textContent =
+            pending.length;
+
+    }
+
+
+    if (pendingStat) {
+
+        pendingStat.textContent =
+            pending.length;
+
+    }
+
+
+    if (approvedStat) {
+
+        approvedStat.textContent =
+            approved.length;
+
+    }
+
+
+    if (rejectedStat) {
+
+        rejectedStat.textContent =
+            rejected.length;
+
+    }
+
+
+    if (approvedAmountStat) {
+
+        approvedAmountStat.textContent =
+            formatMoney(
+                approvedAmount
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   REQUEST MODAL
+========================================================= */
+
+function openRequestModal(request) {
+
+    if (!requestModal || !requestModalContent) {
+        return;
+    }
+
+
+    requestModalContent.innerHTML = `
+
+        <div class="request-detail-grid">
+
+            <div>
+
+                <span>
+                    Account Name
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        request.accountName ||
+                        "Not provided"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Account Address
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        request.accountAddress ||
+                        "Not provided"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Credit Amount
+                </span>
+
+                <strong>
+                    ${formatMoney(
+                        request.creditAmount
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Credit Cost
+                </span>
+
+                <strong>
+                    ${formatMoney(
+                        request.creditCost
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Payment Method
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        request.paymentMethod ||
+                        "Bank Transfer"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Device ID
+                </span>
+
+                <strong>
+                    ${escapeHTML(
+                        request.deviceId ||
+                        "Unknown"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Status
+                </span>
+
+                <strong>
+                    ${String(
+                        request.status ||
+                        "pending"
+                    ).toUpperCase()}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Requested
+                </span>
+
+                <strong>
+                    ${formatDate(
+                        request.createdAt
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    requestModal.classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   CLOSE REQUEST MODAL
+========================================================= */
+
+function closeRequestDetails() {
+
+    if (!requestModal) return;
+
+    requestModal.classList.add("hidden");
+
+}
+
+
+if (closeRequestModal) {
+
+    closeRequestModal.addEventListener(
+        "click",
+        closeRequestDetails
+    );
+
+}
+
+
+if (requestModal) {
+
+    requestModal.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target ===
+                requestModal
+            ) {
+
+                closeRequestDetails();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CONFIRMATION
+========================================================= */
+
+function openConfirmation(
+    title,
+    message,
+    action,
+    type = "danger"
+) {
+
+    if (!confirmModal) return;
+
+
+    confirmTitle.textContent =
+        title;
+
+    confirmMessage.textContent =
+        message;
+
+
+    confirmCallback =
+        action;
+
+
+    if (confirmIcon) {
+
+        confirmIcon.textContent =
+            type === "approve"
+                ? "✓"
+                : "!";
+
+    }
+
+
+    confirmActionBtn.className =
+        type === "approve"
+            ? "primary-btn"
+            : "danger-btn";
+
+
+    confirmActionBtn.textContent =
+        type === "approve"
+            ? "Approve"
+            : "Confirm";
+
+
+    confirmModal.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+function closeConfirmation() {
+
+    if (!confirmModal) return;
+
+    confirmModal.classList.add(
+        "hidden"
+    );
+
+    confirmCallback =
+        null;
+
+}
+
+
+if (confirmCancelBtn) {
+
+    confirmCancelBtn.addEventListener(
+        "click",
+        closeConfirmation
+    );
+
+}
+
+
+if (confirmActionBtn) {
+
+    confirmActionBtn.addEventListener(
+        "click",
+        async function () {
+
+            if (!confirmCallback) {
+                return;
+            }
+
+
+            const callback =
+                confirmCallback;
+
+
+            confirmCallback =
+                null;
+
+
+            try {
+
+                await callback();
+
+            } catch (error) {
+
+                console.error(
+                    "Confirmation action failed:",
+                    error
+                );
+
+                showToast(
+                "Error",
+                error.message || "The operation could not be completed."
+             );
+
+            }
+
+
+            closeConfirmation();
+
+        }
+    );
+
+}
+
+function createAccountNumberRequestCard(request) {
+
+    const status =
+        String(
+            request.status || "pending"
+        ).toLowerCase();
+
+    const isPending =
+        status === "pending";
+
+    const accountName =
+        request.accountName ||
+        request.userName ||
+        request.name ||
+        "Unknown Account";
+
+    const accountAddress =
+        request.accountAddress ||
+        "No account address";
+
+    const deviceId =
+        request.deviceId ||
+        "Unknown Device";
+
+    const cost =
+        request.accountNumberCost ??
+        request.paymentCost ??
+        request.cost ??
+        accountNumberCost;
+
+
+    const card =
+        document.createElement("div");
+
+
+    card.className =
+        "request-card account-number-request-card";
+
+
+    card.dataset.accountNumberRequestId =
+        request.id || "";
+
+
+    card.innerHTML = `
+
+        <div class="request-card-top">
+
+            <div class="request-user">
+
+                <div class="request-avatar">
+
+                    ${escapeHTML(
+                        String(accountName)
+                            .charAt(0)
+                            .toUpperCase()
+                    )}
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        ${escapeHTML(accountName)}
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(accountAddress)}
+                    </span>
+
+                </div>
+
+            </div>
+
+            ${statusBadge(status)}
+
+        </div>
+
+
+        <div class="request-card-main">
+
+            <div class="request-info">
+
+                <span>
+                    Request Type
+                </span>
+
+                <strong>
+                    Account Number
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Payment Method
+                </span>
+
+                <strong>
+                    ${paymentMethodLabel(
+                        request.paymentMethod
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Account Number Cost
+                </span>
+
+                <strong>
+                    ${formatMoney(cost)}
+                </strong>
+
+            </div>
+
+
+            <div class="request-info">
+
+                <span>
+                    Device ID
+                </span>
+
+                <strong class="device-value">
+
+                    ${escapeHTML(deviceId)}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="request-card-details">
+
+            <div>
+
+                <span>
+                    Account Name
+                </span>
+
+                <strong>
+                    ${escapeHTML(accountName)}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Account Address
+                </span>
+
+                <strong>
+                    ${escapeHTML(accountAddress)}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Requested
+                </span>
+
+                <strong>
+                    ${formatDate(
+                        request.createdAt ||
+                        request.requestedAt ||
+                        request.updatedAt
+                    )}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="request-card-actions">
+
+            ${
+                isPending
+                    ? `
+
+                        <button
+                            class="request-approve-btn"
+                            data-account-number-action="approve"
+                            data-id="${escapeHTML(
+                                request.id
+                            )}"
+                        >
+                            Approve
+                        </button>
+
+
+                        <button
+                            class="request-reject-btn"
+                            data-account-number-action="reject"
+                            data-id="${escapeHTML(
+                                request.id
+                            )}"
+                        >
+                            Reject
+                        </button>
+
+                    `
+                    : ""
+            }
+
+
+            <button
+                class="request-delete-btn"
+                data-account-number-action="delete"
+                data-id="${escapeHTML(
+                    request.id
+                )}"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+function getAccountNumberRequestTime(request) {
+
+    const timestamp =
+        request.requestedAt ||
+        request.createdAt ||
+        request.updatedAt;
+
+
+    if (!timestamp) {
+        return 0;
+    }
+
+
+    try {
+
+        if (
+            typeof timestamp.toMillis ===
+            "function"
+        ) {
+
+            return timestamp.toMillis();
+
+        }
+
+
+        if (
+            timestamp.seconds !== undefined
+        ) {
+
+            return (
+                Number(timestamp.seconds) * 1000
+            );
+
+        }
+
+
+        const parsed =
+            new Date(timestamp).getTime();
+
+
+        return Number.isNaN(parsed)
+            ? 0
+            : parsed;
+
+    } catch (error) {
+
+        return 0;
+
+    }
+
+}
+
+function renderAccountNumberRequests() {
+
+    const accountNumberList =
+        document.getElementById(
+            "requestList"
+        );
+
+
+    if (!accountNumberList) {
+
+        console.error(
+            "requestList was not found in admin.html."
+        );
+
+        return;
+
+    }
+
+
+    const requests =
+        [...allAccountNumberRequests]
+            .sort(
+                function (a, b) {
+
+                    return getAccountNumberRequestTime(b)
+                        -
+                        getAccountNumberRequestTime(a);
+
+                }
+            );
+
+
+    /*
+     * Remove previously rendered
+     * Account Number request cards.
+     */
+    accountNumberList
+        .querySelectorAll(
+            ".account-number-request-card"
+        )
+        .forEach(
+            function (card) {
+
+                card.remove();
+
+            }
+        );
+
+
+    /*
+     * Render Account Number requests
+     * at the top of the existing
+     * Admin request list.
+     */
+    requests
+        .slice()
+        .reverse()
+        .forEach(
+            function (request) {
+
+                accountNumberList.prepend(
+                    createAccountNumberRequestCard(
+                        request
+                    )
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   ACCOUNT NUMBER REQUEST BUTTON EVENTS
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const button =
+            event.target.closest(
+                "[data-account-number-action]"
+            );
+
+        if (!button) return;
+
+
+        const action =
+            button.dataset.accountNumberAction;
+
+        const id =
+            button.dataset.id;
+
+
+        const request =
+            allAccountNumberRequests.find(
+                function (item) {
+
+                    return item.id === id;
+
+                }
+            );
+
+
+        if (!request) return;
+
+
+        if (action === "approve") {
+
+            openConfirmation(
+                "Approve Account Number",
+                `Approve the Account Number request from ${request.accountName || request.userName || "this user"}? A new Payza Account Number will be generated and assigned to this user's account.`,
+                function () {
+
+                    return approveAccountNumberRequest(
+                        request.id
+                    );
+
+                },
+                "approve"
+            );
+
+            return;
+
+        }
+
+
+        if (action === "reject") {
+
+            openConfirmation(
+                "Reject Account Number Request",
+                `Reject the Account Number request from ${request.accountName || request.userName || "this user"}?`,
+                async function () {
+
+                    await updateDoc(
+                        doc(
+                            db,
+                            "accountNumberRequests",
+                            request.id
+                        ),
+                        {
+
+                            status:
+                                "rejected",
+
+                            rejectedAt:
+                                serverTimestamp(),
+
+                            updatedAt:
+                                serverTimestamp()
+
+                        }
+                    );
+
+
+                    await addActivity(
+                        "Account Number Rejected",
+                        `${request.accountName || request.userName || "Account"} Account Number request was rejected.`
+                    );
+
+
+                    showToast(
+                        "Request Rejected",
+                        "The Account Number request has been rejected."
+                    );
+
+                }
+            );
+
+            return;
+
+        }
+
+
+        if (action === "delete") {
+
+            openConfirmation(
+                "Delete Account Number Request",
+                "Delete this Account Number request permanently from the Admin Dashboard?",
+                async function () {
+
+                    await deleteDoc(
+                        doc(
+                            db,
+                            "accountNumberRequests",
+                            request.id
+                        )
+                    );
+
+
+                    await addActivity(
+                        "Account Number Request Deleted",
+                        `${request.accountName || request.userName || "Account"} Account Number request was deleted.`
+                    );
+
+
+                    showToast(
+                        "Request Deleted",
+                        "The Account Number request has been removed."
+                    );
+
+                }
+            );
+
+        }
+
+    }
+);
+
+
+async function getPayzaAccountForRequest(request) {
+
+    const possibleDeviceIds = [
+        request.deviceId,
+        request.userId,
+        request.uid,
+        request.id
+    ].filter(Boolean);
+
+
+    /* =========================================
+       FIRST: TRY THE DEVICE ID AS DOCUMENT ID
+    ========================================= */
+
+    for (const deviceId of possibleDeviceIds) {
+
+        try {
+
+            const accountSnapshot =
+                await getDoc(
+                    doc(
+                        db,
+                        "payzaAccounts",
+                        deviceId
+                    )
+                );
+
+
+            if (accountSnapshot.exists()) {
+
+                const accountData =
+                    accountSnapshot.data();
+
+                return {
+                    ...accountData,
+
+                    deviceId:
+                        accountData.deviceId ||
+                        deviceId
+                };
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Account lookup error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =========================================
+       SECOND: SEARCH payzaAccounts BY deviceId
+    ========================================= */
+
+    for (const deviceId of possibleDeviceIds) {
+
+        try {
+
+            const accountQuery =
+                query(
+                    payzaAccountsRef,
+                    where(
+                        "deviceId",
+                        "==",
+                        deviceId
+                    )
+                );
+
+
+            const accountSnapshot =
+                await getDocs(accountQuery);
+
+
+            if (!accountSnapshot.empty) {
+
+                const accountDocument =
+                    accountSnapshot.docs[0];
+
+
+                return {
+                    ...accountDocument.data(),
+
+                    deviceId:
+                        accountDocument.data()
+                            .deviceId ||
+                        deviceId
+                };
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Account deviceId search error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+function listenForAccountNumberRequests() {
+
+    onSnapshot(
+
+        accountNumberRequestsRef,
+
+        async function (snapshot) {
+
+            try {
+
+                allAccountNumberRequests =
+                    await Promise.all(
+
+                        snapshot.docs.map(
+                            async function (
+                                document
+                            ) {
+
+                                const request =
+                                    document.data();
+
+
+                                const accountData =
+                                    await getAccountDataForRequest(
+                                        {
+                                            ...request,
+
+                                            id:
+                                                document.id
+                                        }
+                                    );
+
+
+                                return {
+
+                                    id:
+                                        document.id,
+
+                                    ...request,
+
+
+                                    deviceId:
+                                        accountData.deviceId ||
+                                        request.deviceId ||
+                                        request.userId ||
+                                        request.uid ||
+                                        document.id,
+
+
+                                    accountName:
+                                        accountData.name ||
+                                        request.accountName ||
+                                        request.userName ||
+                                        request.name ||
+                                        "Unknown Account",
+
+
+                                    accountAddress:
+                                        accountData.accountAddress ||
+                                        request.accountAddress ||
+                                        "",
+
+
+                                    accountNumber:
+                                        accountData.accountNumber ||
+                                        request.accountNumber ||
+                                        null,
+
+
+                                    balance:
+                                        accountData.balance ??
+                                        request.balance ??
+                                        0
+
+                                };
+
+                            }
+                        )
+
+                    );
+
+
+                allAccountNumberRequests.sort(
+                    function (a, b) {
+
+                        return (
+                            getAccountNumberRequestTime(b) -
+                            getAccountNumberRequestTime(a)
+                        );
+
+                    }
+                );
+
+
+                console.log(
+                    "ACCOUNT NUMBER REQUESTS WITH REAL ACCOUNT DATA:",
+                    allAccountNumberRequests
+                );
+
+
+                renderAccountNumberRequests();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Account Number request processing error:",
+                    error
+                );
+
+            }
 
         },
 
@@ -1167,13 +3927,8 @@ function listenForAccountNumberRequests() {
                 error
             );
 
-
-            showToast(
-                "Connection Error",
-                "Unable to receive Account Number requests."
-            );
-
         }
+
     );
 
 }
@@ -1572,223 +4327,7 @@ async function approveRequest(request) {
         }
 
 
-        /* =====================================================
-           ACCOUNT NUMBER REQUEST
-           ================================================ */
 
-        if (
-            request.transactionType ===
-            "account_number_purchase" ||
-            request.accountNumberPurchase === true
-        ) {
-
-
-            /*
-             * IMPORTANT:
-             *
-             * If this Account Number has already
-             * been approved, DO NOTHING.
-             *
-             * This prevents the same device from
-             * generating another Account Number.
-             */
-            if (
-                accountData.accountNumberApproved === true &&
-                accountData.accountNumber
-            ) {
-
-                await updateDoc(
-                    doc(
-                        db,
-                        "creditRequests",
-                        requestId
-                    ),
-                    {
-
-                        status:
-                            "approved",
-
-                        accountNumberApproved:
-                            true,
-
-                        accountNumber:
-                            accountData.accountNumber,
-
-                        approvedAt:
-                            serverTimestamp(),
-
-                        updatedAt:
-                            serverTimestamp()
-
-                    }
-                );
-
-
-                showToast(
-                    "Account Number is already approved for this account"
-                );
-
-                return;
-
-            }
-
-
-            /*
-             * Generate a unique Payza Account Number.
-             *
-             * Example:
-             * PAYZA-7248540461
-             */
-            let accountNumber = null;
-
-
-            for (
-                let attempt = 0;
-                attempt < 10;
-                attempt++
-            ) {
-
-                const randomDigits =
-                    Math.floor(
-                        1000000000 +
-                        Math.random() * 9000000000
-                    ).toString();
-
-
-                const candidate =
-                    `PAYZA-${randomDigits}`;
-
-
-                const existingQuery =
-                    query(
-                        collection(
-                            db,
-                            "payzaAccounts"
-                        ),
-                        where(
-                            "accountNumber",
-                            "==",
-                            candidate
-                        )
-                    );
-
-
-                const existing =
-                    await getDocs(
-                        existingQuery
-                    );
-
-
-                if (existing.empty) {
-
-                    accountNumber =
-                        candidate;
-
-                    break;
-
-                }
-
-            }
-
-
-            if (!accountNumber) {
-
-                showToast(
-                    "Unable to generate Account Number"
-                );
-
-                return;
-
-            }
-
-
-            /*
-             * =================================================
-             * ACCOUNT NUMBER APPROVAL ONLY
-             * =================================================
-             *
-             * DO NOT:
-             *
-             * increment(balance)
-             * add credit
-             * approve credit amount
-             * add purchased credit
-             *
-             * This update only belongs to the
-             * Account Number request.
-             */
-            await updateDoc(
-                accountRef,
-                {
-
-                    accountNumber:
-                        accountNumber,
-
-                    accountNumberApproved:
-                        true,
-
-                    accountNumberRequested:
-                        true,
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            /*
-             * Mark ONLY this request as approved.
-             */
-            await updateDoc(
-                doc(
-                    db,
-                    "creditRequests",
-                    requestId
-                ),
-                {
-
-                    status:
-                        "approved",
-
-                    transactionType:
-                        "account_number_purchase",
-
-                    accountNumberPurchase:
-                        true,
-
-                    accountNumberApproved:
-                        true,
-
-                    accountNumber:
-                        accountNumber,
-
-                    approvedAt:
-                        serverTimestamp(),
-
-                    updatedAt:
-                        serverTimestamp()
-
-                }
-            );
-
-
-            console.log(
-                "Account Number approved:",
-                accountNumber,
-                "for device:",
-                deviceId
-            );
-
-
-            showToast(
-                "Account Number approved successfully"
-            );
-
-
-            return;
-
-        }
 
 
         /* =====================================================
@@ -1796,9 +4335,9 @@ async function approveRequest(request) {
            ===================================================== */
 
         const amount =
-            Number(
-                request.creditAmount || 0
-            );
+         parseCreditValue(
+        request.creditAmount
+    );
 
 
         if (
@@ -2131,52 +4670,378 @@ document.addEventListener(
 );
 
 
+async function getAccountDataForRequest(request) {
+
+    const identifiers = [
+        request.deviceId,
+        request.userId,
+        request.uid,
+        request.payzaDeviceId,
+        request.accountId,
+        request.id
+    ].filter(Boolean);
+
+
+    /*
+     * =========================================
+     * 1. TRY DOCUMENT ID
+     * =========================================
+     */
+
+    for (const identifier of identifiers) {
+
+        try {
+
+            const accountSnapshot =
+                await getDoc(
+                    doc(
+                        db,
+                        "payzaAccounts",
+                        String(identifier)
+                    )
+                );
+
+
+            if (accountSnapshot.exists()) {
+
+                return {
+                    ...accountSnapshot.data(),
+                    _documentId:
+                        accountSnapshot.id
+                };
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Payza account lookup error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+     * =========================================
+     * 2. TRY deviceId FIELD
+     * =========================================
+     */
+
+    for (const identifier of identifiers) {
+
+        try {
+
+            const accountQuery =
+                query(
+                    payzaAccountsRef,
+                    where(
+                        "deviceId",
+                        "==",
+                        String(identifier)
+                    )
+                );
+
+
+            const accountSnapshot =
+                await getDocs(
+                    accountQuery
+                );
+
+
+            if (!accountSnapshot.empty) {
+
+                const accountDocument =
+                    accountSnapshot.docs[0];
+
+
+                return {
+                    ...accountDocument.data(),
+                    _documentId:
+                        accountDocument.id
+                };
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Payza deviceId search error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+     * =========================================
+     * 3. NO ACCOUNT FOUND
+     * =========================================
+     */
+
+    return {};
+
+}
+
+
+function parseCreditValue(value) {
+
+    if (typeof value === "number") {
+
+        return Number.isFinite(value)
+            ? value
+            : 0;
+
+    }
+
+    if (value === null || value === undefined) {
+        return 0;
+    }
+
+    const cleaned =
+        String(value)
+            .replace(/,/g, "")
+            .replace(/[^\d.-]/g, "");
+
+    const number =
+        Number(cleaned);
+
+    return Number.isFinite(number)
+        ? number
+        : 0;
+
+}
+
 /* =========================================================
    REALTIME CREDIT REQUEST LISTENER
 ========================================================= */
 
-function listenForCreditRequests() {
+async function listenForCreditRequests() {
 
     onSnapshot(
+
         creditRequestsRef,
-        function (snapshot) {
 
-            allRequests =
-                snapshot.docs.map(
-                    function (document) {
+        async function (snapshot) {
 
-                        return {
+            try {
 
-                            id:
-                                document.id,
+                allRequests =
+                    await Promise.all(
 
-                            ...document.data()
+                        snapshot.docs.map(
+                            async function (document) {
 
-                        };
+                                const request =
+                                    document.data() || {};
+
+
+                                /*
+                                 * Get the real Payza account.
+                                 */
+                                const accountData =
+                                    await getAccountDataForRequest({
+
+                                        ...request,
+
+                                        id:
+                                            document.id
+
+                                    }) || {};
+
+
+                                /*
+                                 * =================================================
+                                 * CREDIT AMOUNT
+                                 * =================================================
+                                 *
+                                 * IMPORTANT:
+                                 * Read the value saved in creditRequests first.
+                                 */
+                                const creditAmount =
+                                    parseCreditValue(
+                                        request.creditAmount
+                                    );
+
+
+                                /*
+                                 * =================================================
+                                 * CREDIT COST
+                                 * =================================================
+                                 */
+                                const creditCost =
+                                    parseCreditValue(
+                                        request.creditCost
+                                    );
+
+
+                                /*
+                                 * =================================================
+                                 * ACCOUNT ADDRESS
+                                 * =================================================
+                                 */
+                                const accountAddress =
+                                    request.accountAddress ??
+                                    request.address ??
+                                    request.payzaAddress ??
+                                    accountData.accountAddress ??
+                                    accountData.address ??
+                                    "";
+
+
+                                /*
+                                 * =================================================
+                                 * ACCOUNT NAME
+                                 * =================================================
+                                 */
+                                const accountName =
+                                    request.accountName ??
+                                    request.userName ??
+                                    request.name ??
+                                    accountData.name ??
+                                    "Unknown Account";
+
+
+                                /*
+                                 * =================================================
+                                 * DEVICE ID
+                                 * =================================================
+                                 */
+                                const deviceId =
+                                    request.deviceId ??
+                                    request.userId ??
+                                    request.uid ??
+                                    request.payzaDeviceId ??
+                                    accountData.deviceId ??
+                                    accountData._documentId ??
+                                    document.id;
+
+
+                                /*
+                                 * =================================================
+                                 * FINAL NORMALIZED REQUEST
+                                 * =================================================
+                                 */
+                                const normalizedRequest = {
+
+                                    id:
+                                        document.id,
+
+                                    ...request,
+
+
+                                    /*
+                                     * ALWAYS use the real values
+                                     * from creditRequests.
+                                     */
+                                    creditAmount:
+                                        creditAmount,
+
+                                    creditCost:
+                                        creditCost,
+
+
+                                    accountName:
+                                        accountName,
+
+                                    accountAddress:
+                                        accountAddress,
+
+                                    deviceId:
+                                        deviceId,
+
+
+                                    balance:
+                                        accountData.balance ??
+                                        request.balance ??
+                                        0
+
+                                };
+
+
+                                console.log(
+                                    "CREDIT REQUEST FROM FIREBASE:",
+                                    {
+                                        documentId:
+                                            document.id,
+
+                                        creditAmount:
+                                            request.creditAmount,
+
+                                        creditCost:
+                                            request.creditCost,
+
+                                        paymentMethod:
+                                            request.paymentMethod,
+
+                                        accountAddress:
+                                            request.accountAddress,
+
+                                        deviceId:
+                                            request.deviceId
+                                    }
+                                );
+
+
+                                console.log(
+                                    "NORMALIZED CREDIT REQUEST:",
+                                    normalizedRequest
+                                );
+
+
+                                return normalizedRequest;
+
+                            }
+
+                        )
+
+                    );
+
+
+                /*
+                 * Sort newest first.
+                 */
+                allRequests.sort(
+                    function (a, b) {
+
+                        return (
+                            getRequestTime(b) -
+                            getRequestTime(a)
+                        );
 
                     }
                 );
 
 
-            allRequests.sort(
-                function (a, b) {
-
-                    return getRequestTime(b)
-                        - getRequestTime(a);
-
-                }
-            );
+                console.log(
+                    "FINAL CREDIT REQUESTS:",
+                    allRequests
+                );
 
 
-            updateStatistics();
+                updateStatistics();
 
-            renderRequestList();
+                renderRequestList();
 
-            renderRecentRequests();
+                renderRecentRequests();
 
-            renderApprovedRequests();
+                renderApprovedRequests();
 
-            renderRejectedRequests();
+                renderRejectedRequests();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Credit request processing error:",
+                    error
+                );
+
+            }
 
         },
 
@@ -2187,12 +5052,14 @@ function listenForCreditRequests() {
                 error
             );
 
+
             showToast(
                 "Connection Error",
                 "Unable to receive credit requests in real time."
             );
 
         }
+
     );
 
 }
