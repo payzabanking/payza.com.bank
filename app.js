@@ -7188,6 +7188,19 @@ async function findBeneficiary(
     accountNumber
 ) {
 
+    const cleanAccountNumber =
+        String(accountNumber || "")
+            .trim()
+            .toUpperCase();
+
+
+    if (!cleanAccountNumber) {
+
+        return null;
+
+    }
+
+
     const accountsRef =
         collection(
             db,
@@ -7201,7 +7214,7 @@ async function findBeneficiary(
             where(
                 "accountNumber",
                 "==",
-                accountNumber
+                cleanAccountNumber
             )
         );
 
@@ -7212,7 +7225,14 @@ async function findBeneficiary(
         );
 
 
-    if (result.empty) {
+    if (
+        result.empty
+    ) {
+
+        console.log(
+            "Beneficiary not found. Account Number searched:",
+            cleanAccountNumber
+        );
 
         return null;
 
@@ -7235,8 +7255,8 @@ if (confirmSendCreditBtn) {
         async () => {
 
             const beneficiaryAccountNumber =
-                beneficiaryAddressInput.value
-                    .trim();
+    beneficiaryAddressInput.value
+        .trim();
 
             const amount =
                 Number(
