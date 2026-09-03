@@ -7194,6 +7194,7 @@ async function findBeneficiary(
             "payzaAccounts"
         );
 
+
     const beneficiaryQuery =
         query(
             accountsRef,
@@ -7204,16 +7205,22 @@ async function findBeneficiary(
             )
         );
 
+
     const result =
         await getDocs(
             beneficiaryQuery
         );
 
+
     if (result.empty) {
+
         return null;
+
     }
 
+
     return result.docs[0];
+
 }
 
 
@@ -7227,11 +7234,9 @@ if (confirmSendCreditBtn) {
         "click",
         async () => {
 
-            const beneficiaryAddress =
+            const beneficiaryAccountNumber =
                 beneficiaryAddressInput.value
-                    .trim()
-                    .toUpperCase();
-
+                    .trim();
 
             const amount =
                 Number(
@@ -7239,17 +7244,26 @@ if (confirmSendCreditBtn) {
                 );
 
 
-            if (
-    beneficiaryAddress ===
-    user.accountAddress
-) {
-    showToast(
-        "You cannot send credit to yourself"
-    );
+            /* =====================================================
+               VALIDATE ACCOUNT NUMBER
+            ===================================================== */
 
-    return;
-}
+            if (!beneficiaryAccountNumber) {
 
+                showToast(
+                    "Enter beneficiary account number"
+                );
+
+                beneficiaryAddressInput.focus();
+
+                return;
+
+            }
+
+
+            /* =====================================================
+               VALIDATE AMOUNT
+            ===================================================== */
 
             if (
                 !Number.isFinite(amount) ||
@@ -7264,6 +7278,10 @@ if (confirmSendCreditBtn) {
 
             }
 
+
+            /* =====================================================
+               CHECK SENDER BALANCE
+            ===================================================== */
 
             const currentBalance =
                 Number(
@@ -7296,22 +7314,32 @@ if (confirmSendCreditBtn) {
             }
 
 
-           if (
-    beneficiaryAccountNumber ===
-    String(user.accountNumber || "").trim()
-) {
+            /* =====================================================
+               PREVENT SENDING TO YOUR OWN ACCOUNT
+            ===================================================== */
 
-    showToast(
-        "You cannot send credit to yourself"
-    );
+            if (
+                beneficiaryAccountNumber ===
+                String(
+                    user.accountNumber || ""
+                ).trim()
+            ) {
 
-    return;
-}
+                showToast(
+                    "You cannot send credit to yourself"
+                );
 
+                return;
+
+            }
+
+
+            /* =====================================================
+               DISABLE BUTTON
+            ===================================================== */
 
             confirmSendCreditBtn.disabled =
                 true;
-
 
             confirmSendCreditBtn.innerHTML =
                 "Checking account...";
@@ -7319,10 +7347,14 @@ if (confirmSendCreditBtn) {
 
             try {
 
+                /* =================================================
+                   FIND BENEFICIARY BY ACCOUNT NUMBER
+                ================================================= */
+
                 const beneficiary =
-    await findBeneficiary(
-        beneficiaryAccountNumber
-    );
+                    await findBeneficiary(
+                        beneficiaryAccountNumber
+                    );
 
 
                 if (!beneficiary) {
@@ -7344,9 +7376,27 @@ if (confirmSendCreditBtn) {
                     beneficiary.ref;
 
 
-                /*
-                 * Deduct sender balance.
-                 */
+                /* =================================================
+                   MAKE SURE BENEFICIARY ACCOUNT IS VALID
+                ================================================= */
+
+                if (
+                    !beneficiaryData ||
+                    !beneficiaryRef
+                ) {
+
+                    showToast(
+                        "Invalid beneficiary account"
+                    );
+
+                    return;
+
+                }
+
+
+                /* =================================================
+                   DEDUCT CREDIT FROM SENDER
+                ================================================= */
 
                 const senderRef =
                     getDeviceAccountRef();
@@ -7356,7 +7406,9 @@ if (confirmSendCreditBtn) {
                     senderRef,
                     {
                         balance:
-                            increment(-amount),
+                            increment(
+                                -amount
+                            ),
 
                         updatedAt:
                             Date.now()
@@ -7364,15 +7416,17 @@ if (confirmSendCreditBtn) {
                 );
 
 
-                /*
-                 * Add to beneficiary balance.
-                 */
+                /* =================================================
+                   ADD CREDIT TO BENEFICIARY
+                ================================================= */
 
                 await updateDoc(
                     beneficiaryRef,
                     {
                         balance:
-                            increment(amount),
+                            increment(
+                                amount
+                            ),
 
                         updatedAt:
                             Date.now()
@@ -7380,39 +7434,71 @@ if (confirmSendCreditBtn) {
                 );
 
 
-                /*
-                 * Update current UI.
-                 */
+                /* =================================================
+                   UPDATE CURRENT USER BALANCE
+                ================================================= */
 
-                user.balance =
+                const newBalance =
                     currentBalance -
                     amount;
+
+
+                user.balance =
+                    newBalance;
 
 
                 updateBalanceUI();
 
                 updateSavingsUI();
 
-                updateSavingsAccountStatus(user);
+
+                /* =================================================
+                   UPDATE SAVINGS ACCOUNT STATUS
+                ================================================= */
+
+                updateSavingsAccountStatus(
+                    {
+                        balance:
+                            newBalance,
+
+                        name:
+                            user.name ||
+                            ""
+                    }
+                );
 
 
-                if (sendAvailableBalance) {
+                /* =================================================
+                   UPDATE SEND MODAL BALANCE
+                ================================================= */
+
+                if (
+                    sendAvailableBalance
+                ) {
 
                     sendAvailableBalance.textContent =
                         formatMoney(
-                            user.balance
+                            newBalance
                         );
 
                 }
 
+
+                /* =================================================
+                   CLOSE SEND CREDIT MODAL
+                ================================================= */
 
                 sendCreditModal.classList.add(
                     "hidden"
                 );
 
 
+                /* =================================================
+                   SUCCESS MESSAGE
+                ================================================= */
+
                 showToast(
-                    `ȼ̲${formatMoney(amount)} sent successfully`
+                    `◈${formatMoney(amount)} sent successfully`
                 );
 
 
@@ -7422,7 +7508,6 @@ if (confirmSendCreditBtn) {
                     "Send credit error:",
                     error
                 );
-
 
                 showToast(
                     "Unable to send credit"
