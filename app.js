@@ -7181,11 +7181,11 @@ if (closeSendCreditModal) {
 
 
 /* =========================================================
-   FIND BENEFICIARY
+   FIND BENEFICIARY BY ACCOUNT NUMBER
 ========================================================= */
 
 async function findBeneficiary(
-    address
+    accountNumber
 ) {
 
     const accountsRef =
@@ -7194,33 +7194,26 @@ async function findBeneficiary(
             "payzaAccounts"
         );
 
-
     const beneficiaryQuery =
         query(
             accountsRef,
             where(
-                "accountAddress",
+                "accountNumber",
                 "==",
-                address
+                accountNumber
             )
         );
-
 
     const result =
         await getDocs(
             beneficiaryQuery
         );
 
-
     if (result.empty) {
-
         return null;
-
     }
 
-
     return result.docs[0];
-
 }
 
 
@@ -7246,17 +7239,16 @@ if (confirmSendCreditBtn) {
                 );
 
 
-            if (!beneficiaryAddress) {
+            if (
+    beneficiaryAddress ===
+    user.accountAddress
+) {
+    showToast(
+        "You cannot send credit to yourself"
+    );
 
-                showToast(
-                    "Enter beneficiary account address"
-                );
-
-                beneficiaryAddressInput.focus();
-
-                return;
-
-            }
+    return;
+}
 
 
             if (
@@ -7304,18 +7296,17 @@ if (confirmSendCreditBtn) {
             }
 
 
-            if (
-                beneficiaryAddress ===
-                user.accountAddress
-            ) {
+           if (
+    beneficiaryAccountNumber ===
+    String(user.accountNumber || "").trim()
+) {
 
-                showToast(
-                    "You cannot send credit to yourself"
-                );
+    showToast(
+        "You cannot send credit to yourself"
+    );
 
-                return;
-
-            }
+    return;
+}
 
 
             confirmSendCreditBtn.disabled =
@@ -7329,9 +7320,9 @@ if (confirmSendCreditBtn) {
             try {
 
                 const beneficiary =
-                    await findBeneficiary(
-                        beneficiaryAddress
-                    );
+    await findBeneficiary(
+        beneficiaryAccountNumber
+    );
 
 
                 if (!beneficiary) {
